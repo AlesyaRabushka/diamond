@@ -3,7 +3,6 @@ export class Service{
 
     async uploadImg(){
         try {
-            let img = '/home/aleksa/Загрузки/10+ Best Rick and Morty Wallpapers HD.png'
             
         } catch (error) {
             console.log('[Service error]: ', error);
