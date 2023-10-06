@@ -2,6 +2,7 @@ import { config } from "dotenv";
 config();
 import express from "express";
 import { router } from "./router";
+import cors from "cors";
 
 
 const PORT = Number(process.env.PORT) || 3003;
@@ -13,8 +14,10 @@ function bootstrap(){
         app.use(express.json());
         app.use(express.urlencoded({
             extended: true,
-        }))
-        console.log(Number(process.env.PORT) )
+        }));
+        app.use(cors());
+
+        
         app.use('/img', express.static('/img'))
         app.use('/', router);
 

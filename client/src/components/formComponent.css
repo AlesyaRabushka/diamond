@@ -1,0 +1,53 @@
+.form{
+    width: calc(50%);
+
+    margin-top: calc(15%);
+    background-color: aqua;
+
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+
+    padding-top: calc(2%);
+    padding-bottom: calc(2%);
+}
+
+.input-box{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+
+.input{
+    /* background-color: antiquewhite;
+
+    border-radius: 35px;
+    box-shadow: 5px;
+
+    width: calc(50%);
+
+    outline: none; */
+    visibility: hidden;
+}
+
+
+.input-file-name{
+    color: white
+}
+
+.input-file-button{
+    width: calc(20%);
+
+    border-radius: 20px;
+    box-shadow: none;
+    outline: none;
+    
+
+    padding: calc(1%);
+    
+    background-color: rgb(51, 81, 182);
+
+    color: white;
+    font-size: 1.1em;
+}

@@ -19,4 +19,5 @@ const upload = multer({
 export const router = Router();
 
 router.post('/upload', upload.single('img'), controller.uploadImg.bind(controller));
-router.get('/img/:name', controller.getImg.bind(controller))
+router.post('/convert', controller.convertImg.bind(controller));
+// router.get('/img/:name', controller.getImg.bind(controller))

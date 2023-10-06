@@ -32,6 +32,23 @@ export class Controller{
             throw error;
         }
     }
+
+    async convertImg(request:Request, response:Response){
+        try {
+            const {path} = request.body;
+            const p: number[][][] = []
+
+            const result = await this.service.consvertImg(path).then((pixels) => {
+                // p.push(pixels)
+            })
+
+            response.status(201).json(p);
+        } catch (error) {
+            console.log('[Controller error]: ', error);
+
+            throw error;
+        }
+    }
 }
 
 export const controller = new Controller(service);
