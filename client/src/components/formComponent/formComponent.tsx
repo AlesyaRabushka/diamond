@@ -47,7 +47,7 @@ export const FormComponent:FC = () => {
 
     const handleModify = async () => {
         // request to modify image
-        const name = await ClientService.modifyImg(String(imgSystemName), 60);
+        const name = await ClientService.modifyImg(String(imgSystemName), Number(pixelRange)*10);
         setModifiedImgSystemName(name);
         console.log('modified img name', name);
         // rewuest to show modified image

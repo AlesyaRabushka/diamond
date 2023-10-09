@@ -1,6 +1,5 @@
 import {createCanvas, loadImage, ImageData} from "canvas";
-import {writeFileSync, readFileSync, existsSync} from "fs";
-import {convert, readMetadata} from "imagemagick";
+import {writeFileSync, readFileSync, existsSync, unlinkSync} from "fs";
 
 import {read} from "jimp";
 
@@ -35,49 +34,6 @@ export class Service{
             (await img).pixelate(pixelationFactor).write(`${process.env.SYSTEM_PATH}/${newImgName}`);
             console.log('NEW NAME', newImgName);
 
-            // if (newImgPath){
-            //     const pixelatedImg = await loadImage(newImgPath);
-            // }
-            
-
-            // const canvas = createCanvas(pixelatedImg.width, pixelatedImg.height)
-            // const ctx = canvas.getContext('2d');
-
-            // const height = pixelatedImg.height;
-            // const width = pixelatedImg.width;
-
-            // ctx.drawImage(pixelatedImg, 0, 0, width, height);
-
-            // const pixelsData = ctx.getImageData(0, 0, width, height).data;
-
-            
-            // // console.log(pixelsData)
-            // // ctx.putImageData(pixelsData, 0, 0);
-
-            // if (pixelationFactor !== 0){
-            //     for (let y = 0; y < height; y+= pixelationFactor){
-            //         for(let x = 0; x < width; x += pixelationFactor){
-            //             const pixelIndexPosition = ( x + (y * width)) * 4;
-
-            //             ctx.fillStyle = `rgba(
-            //                 ${pixelsData[pixelIndexPosition]},
-            //                 ${pixelsData[pixelIndexPosition + 1]},
-            //                 ${pixelsData[pixelIndexPosition + 2]},
-            //                 ${pixelsData[pixelIndexPosition + 3]},
-            //             )`;
-            //             ctx.fillRect(x, y, pixelationFactor, pixelationFactor);
-            //         }
-            //     }
-            // }
-
-
-            // // const newData = await this.editImgData(pixelsData)
-            // // const c = canvas.toDataURL()
-            // // ctx.putImageData(c, 0, 0)
-            // const newImgData = canvas.toDataURL('image/jpeg');
-            // writeFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), newImgData);
-            
-            // return newImgData;
             return newImgName;
             
         } catch (error) {
@@ -106,15 +62,12 @@ export class Service{
 
     async returnImg(){
         try {
-
             let imgData = '';
             if (existsSync(String(process.env.IMG_ORIGINAL_DATA_PATH))){
                 console.log('find file!')
                 imgData = readFileSync(String(process.env.IMG_ORIGINAL_DATA_PATH), 'utf-8');
             }
             
-            
-            // console.log(imgData);
             return imgData;
         } catch (error) {
             console.log('[Service error]: RETURN IMG', error)
@@ -126,6 +79,7 @@ export class Service{
     async returnModifiedImg(imgName:string){
         try {
             console.log('return modified', `${process.env.SYSTEM_PATH}/${imgName}`)
+            
             const pixelatedImg = await loadImage(`${process.env.SYSTEM_PATH}/${imgName}`);
             const canvas = createCanvas(pixelatedImg.width, pixelatedImg.height)
             const ctx = canvas.getContext('2d');
@@ -145,6 +99,8 @@ export class Service{
                 console.log(String(process.env.IMG_MODIFIED_DATA_PATH));
                 console.log('here in modified!')
             }
+
+            unlinkSync(String(process.env.IMG_MODIFIED_DATA_PATH));
             
             return imgData;
         } catch (error) {
