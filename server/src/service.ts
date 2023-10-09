@@ -1,5 +1,8 @@
 import {createCanvas, loadImage, ImageData} from "canvas";
 import {writeFileSync, readFileSync, existsSync} from "fs";
+import {convert, readMetadata} from "imagemagick";
+
+import {read} from "jimp";
 
 export class Service{
     constructor(){};
@@ -26,49 +29,54 @@ export class Service{
 
     async modifyImg(path:string, pixelationFactor:number){
         try {
-            const img = await loadImage(path);
 
-            const canvas = createCanvas(img.width, img.height)
-            const ctx = canvas.getContext('2d');
-
-            const heignht = img.height;
-            const width = img.width;
-
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-            const pixelsData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            const img = read(path);
+            const newImgPath = `${process.env.SYSTEM_PATH}/pixelate_${Date.now()}.jpeg`;
+            (await img).pixelate(pixelationFactor).write(newImgPath);
 
             
-            // console.log(pixelsData)
-            // ctx.putImageData(pixelsData, 0, 0);
+            // const pixelatedImg = await loadImage(newImgPath);
 
-            if (pixelationFactor !== 0){
-                for (let y = 0; y < canvas.height; y+= pixelationFactor){
-                    for(let x = 0; x < canvas.width; x += pixelationFactor){
-                        const pixelIndexPosition = ( x + y * width) * 4;
+            // const canvas = createCanvas(pixelatedImg.width, pixelatedImg.height)
+            // const ctx = canvas.getContext('2d');
 
-                        ctx.fillStyle = `rgba(
-                            ${pixelsData[pixelIndexPosition]},
-                            ${pixelsData[pixelIndexPosition + 1]},
-                            ${pixelsData[pixelIndexPosition + 2]},
-                            ${pixelsData[pixelIndexPosition + 3]},
-                            
-                        )`;
-                        ctx.fillRect(x, y, pixelationFactor, pixelationFactor);
-                    }
-                }
-            }
+            // const height = pixelatedImg.height;
+            // const width = pixelatedImg.width;
 
+            // ctx.drawImage(pixelatedImg, 0, 0, width, height);
 
-            // const newData = await this.editImgData(pixelsData)
-            // const c = canvas.toDataURL()
-            // ctx.putImageData(c, 0, 0)
-            const b = canvas.toDataURL();
-            writeFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), b);
-            // console.log('b',b)
-            // await this.saveImg(ctx, newData)
+            // const pixelsData = ctx.getImageData(0, 0, width, height).data;
+
             
-            return b;
+            // // console.log(pixelsData)
+            // // ctx.putImageData(pixelsData, 0, 0);
+
+            // if (pixelationFactor !== 0){
+            //     for (let y = 0; y < height; y+= pixelationFactor){
+            //         for(let x = 0; x < width; x += pixelationFactor){
+            //             const pixelIndexPosition = ( x + (y * width)) * 4;
+
+            //             ctx.fillStyle = `rgba(
+            //                 ${pixelsData[pixelIndexPosition]},
+            //                 ${pixelsData[pixelIndexPosition + 1]},
+            //                 ${pixelsData[pixelIndexPosition + 2]},
+            //                 ${pixelsData[pixelIndexPosition + 3]},
+            //             )`;
+            //             ctx.fillRect(x, y, pixelationFactor, pixelationFactor);
+            //         }
+            //     }
+            // }
+
+
+            // // const newData = await this.editImgData(pixelsData)
+            // // const c = canvas.toDataURL()
+            // // ctx.putImageData(c, 0, 0)
+            // const newImgData = canvas.toDataURL('image/jpeg');
+            // writeFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), newImgData);
+            
+            // return newImgData;
+            return true;
+            
         } catch (error) {
             console.log('[Service error]: MODIFY', error)
 
@@ -126,6 +134,7 @@ export class Service{
             let imgData = '';
             if (existsSync(String(process.env.IMG_MODIFIED_DATA_PATH))){
                 imgData = readFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), 'utf-8');
+                console.log(String(process.env.IMG_MODIFIED_DATA_PATH));
                 console.log('here in modified!')
             }
             

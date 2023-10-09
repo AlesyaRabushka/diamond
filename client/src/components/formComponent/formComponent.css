@@ -56,3 +56,25 @@
 .uploaded-img{
     width: calc(40%);
 }
+
+input[type='range']{
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type='range']::-moz-range-track{
+    height: 0.7em;
+
+    background-color: rgb(183, 120, 243);
+    border-radius: 20px;
+}
+
+input[type='range']::-moz-range-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+
+    background-color: antiquewhite;
+
+    border-radius: 20px;
+}

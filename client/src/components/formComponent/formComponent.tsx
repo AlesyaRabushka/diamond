@@ -44,7 +44,7 @@ export const FormComponent:FC = () => {
 
     const handleModify = async () => {
         // request to modify image
-        await ClientService.modifyImg(String(imgSystemName), 70);
+        await ClientService.modifyImg(String(imgSystemName), 60);
         // rewuest to show modified image
         await getModifiedImg();
     }
@@ -77,10 +77,7 @@ export const FormComponent:FC = () => {
             <label>{pixelRange}</label>
 
 
-            <button type="button" className="input-file-button" onClick={(e) => {
-                e.preventDefault();
-                handleModify();
-            }}>modify</button>
+            <button type="button" className="input-file-button" onClick={handleModify}>modify</button>
 
             <img src={modifiedImg} className="uploaded-img"/>
         </div>
