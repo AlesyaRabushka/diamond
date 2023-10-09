@@ -10,7 +10,7 @@ export const FormComponent:FC = () => {
 
     const [imgSystemName, setImgSystemName] = useState();
 
-    const [pixelRange, setPixelRange] = useState('');
+    const [pixelRange, setPixelRange] = useState(0);
 
     const [img, setImg] = useState();
     const [modifiedImg, setModifiedImg] = useState();
@@ -33,7 +33,7 @@ export const FormComponent:FC = () => {
     }
     
 
-    const handleSubmit = async () => {
+    const handleUpload = async () => {
         const formData = new FormData();
         formData.append('image', image);
         // upload image to server
@@ -43,7 +43,9 @@ export const FormComponent:FC = () => {
     }
 
     const handleModify = async () => {
+        // request to modify image
         await ClientService.modifyImg(String(imgSystemName), 70);
+        // rewuest to show modified image
         await getModifiedImg();
     }
 
@@ -55,7 +57,7 @@ export const FormComponent:FC = () => {
             <label className="input-file-name">{imageName}</label>
             <button type="button"
                 className="input-file-button"
-                onClick={handleSubmit}>
+                onClick={handleUpload}>
                     Загрузить
             </button>
             </div>
@@ -69,14 +71,16 @@ export const FormComponent:FC = () => {
                 step={1}
                 className="pixelation"
                 onChange={e => 
-                    setPixelRange(e.target.value)
+                    setPixelRange(Number(e.target.value))
                 }
             />
-
-
             <label>{pixelRange}</label>
 
-            <button type="button" className="input-file-button" onClick={handleModify}>modify</button>
+
+            <button type="button" className="input-file-button" onClick={(e) => {
+                e.preventDefault();
+                handleModify();
+            }}>modify</button>
 
             <img src={modifiedImg} className="uploaded-img"/>
         </div>

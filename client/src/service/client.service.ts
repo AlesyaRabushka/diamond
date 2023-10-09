@@ -3,6 +3,7 @@ import $host from "../http/http";
 
 
 export class ClientService{
+    // upload to db
     static async uploadImg(imgData: FormData){
         try {
             const response = await $host.post('/upload', imgData, 
@@ -17,13 +18,11 @@ export class ClientService{
         }
     }
 
+    // modify image
     static async modifyImg(imgName: string, pixelationFactor:number){
         try {
             console.log('in modify', imgName, pixelationFactor)
-            const response = await $host.post('/modify', {imgName, pixelationFactor}, 
-            {headers:{
-                "Content-Type":"multipart/form-data"
-            }})
+            const response = await $host.post('/modify', {imgName, pixelationFactor})
 
             return response;
         } catch (error) {
@@ -32,6 +31,7 @@ export class ClientService{
         }
     }
 
+    // return original image
     static async returnImg(){
         try {
             const response = await $host.get('/returnImg');
@@ -45,6 +45,7 @@ export class ClientService{
         }
     }
 
+    // return modified image
     static async returnModifiedImg(){
         try {
             const response = await $host.get('/returnModifiedImg');
