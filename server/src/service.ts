@@ -31,6 +31,11 @@ export class Service{
 
             const img = read(path);
             const newImgName = `pixelate_${Date.now()}.jpeg`;
+            if (pixelationFactor == 0){
+                const paths = path.split('/');
+                
+                return paths.pop();
+            }
             (await img).pixelate(pixelationFactor).write(`${process.env.SYSTEM_PATH}/${newImgName}`);
             console.log('NEW NAME', newImgName);
 
@@ -42,24 +47,6 @@ export class Service{
             throw error;
         }
     }
-
-    async editImgData(imgData:ImageData){
-        try {
-            for (let i = 0; i < imgData.data.length; i += 4){
-                imgData.data[i] = imgData.data[i] - 100;
-                imgData.data[i + 1] = imgData.data[i + 1] - 100;
-                imgData.data[i + 2] = imgData.data[i + 2] - 100;
-            }
-            // console.log(imgData)
-            return imgData;
-        } catch (error) {
-            console.log('[Service error]: ', error)
-
-            throw error;
-        }
-    }
-
-
     async returnImg(){
         try {
             let imgData = '';
