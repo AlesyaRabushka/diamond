@@ -36,13 +36,10 @@ export class Controller{
             console.log(request.body.pixelationFactor, request.body.imgName)
             
             const path = `${process.env.SYSTEM_PATH}/${request.body.imgName}`
-            console.log(path)
 
-            const result = await this.service.modifyImg(path, Number(request.body.pixelationFactor)).then((pixels) => {
-                // console.log(pixels)
-            })
+            const result = await this.service.modifyImg(path, Number(request.body.pixelationFactor));
 
-            response.status(201).json('result');
+            response.status(201).json(result);
         } catch (error) {
             console.log('[Controller error]: ', error);
 
@@ -66,8 +63,7 @@ export class Controller{
     async returnModifiedImg(request:Request, response:Response){
         try {
             
-            const result = await this.service.returnModifiedImg();
-
+            const result = await this.service.returnModifiedImg(request.body.imgName);
             response.status(200).json(result);
         } catch (error) {
             console.log('[Controller error]: ', error);

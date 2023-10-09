@@ -21,6 +21,6 @@ export const router = Router();
 
 router.post('/upload', upload.single('image'), controller.uploadImg.bind(controller));
 router.get('/returnImg', controller.returnImg.bind(controller));
-router.get('/returnModifiedImg', controller.returnModifiedImg.bind(controller));
+router.post('/returnModifiedImg', controller.returnModifiedImg.bind(controller));
 router.post('/modify', controller.modifyImg.bind(controller));
 // router.get('/img/:name', controller.getImg.bind(controller))

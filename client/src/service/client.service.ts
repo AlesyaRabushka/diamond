@@ -23,8 +23,8 @@ export class ClientService{
         try {
             console.log('in modify', imgName, pixelationFactor)
             const response = await $host.post('/modify', {imgName, pixelationFactor})
-
-            return response;
+            console.log('res data', response.data);
+            return response.data;
         } catch (error) {
             console.log('[ClientService] error:', error);
             throw error;
@@ -46,10 +46,10 @@ export class ClientService{
     }
 
     // return modified image
-    static async returnModifiedImg(){
+    static async returnModifiedImg(imgName:string){
         try {
-            const response = await $host.get('/returnModifiedImg');
-
+            const response = await $host.post('/returnModifiedImg', {imgName});
+            console.log(response.data);
             return response.data;
         } catch (error) {
             console.log('[ClientService] error:', error);

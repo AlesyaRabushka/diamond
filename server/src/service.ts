@@ -31,11 +31,14 @@ export class Service{
         try {
 
             const img = read(path);
-            const newImgPath = `${process.env.SYSTEM_PATH}/pixelate_${Date.now()}.jpeg`;
-            (await img).pixelate(pixelationFactor).write(newImgPath);
+            const newImgName = `pixelate_${Date.now()}.jpeg`;
+            (await img).pixelate(pixelationFactor).write(`${process.env.SYSTEM_PATH}/${newImgName}`);
+            console.log('NEW NAME', newImgName);
 
+            // if (newImgPath){
+            //     const pixelatedImg = await loadImage(newImgPath);
+            // }
             
-            // const pixelatedImg = await loadImage(newImgPath);
 
             // const canvas = createCanvas(pixelatedImg.width, pixelatedImg.height)
             // const ctx = canvas.getContext('2d');
@@ -75,7 +78,7 @@ export class Service{
             // writeFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), newImgData);
             
             // return newImgData;
-            return true;
+            return newImgName;
             
         } catch (error) {
             console.log('[Service error]: MODIFY', error)
@@ -100,15 +103,6 @@ export class Service{
         }
     }
 
-    async saveImg(ctx:CanvasRenderingContext2D, imgData:ImageData){
-        try {
-            // ctx.putImageData(ImageData(imgData), 0, 0)
-        } catch (error) {
-            console.log('[Service error]: ', error)
-
-            throw error;
-        }
-    }
 
     async returnImg(){
         try {
@@ -129,8 +123,22 @@ export class Service{
         }
     }
 
-    async returnModifiedImg(){
+    async returnModifiedImg(imgName:string){
         try {
+            console.log('return modified', `${process.env.SYSTEM_PATH}/${imgName}`)
+            const pixelatedImg = await loadImage(`${process.env.SYSTEM_PATH}/${imgName}`);
+            const canvas = createCanvas(pixelatedImg.width, pixelatedImg.height)
+            const ctx = canvas.getContext('2d');
+
+            const height = pixelatedImg.height;
+            const width = pixelatedImg.width;
+
+            ctx.drawImage(pixelatedImg, 0, 0, width, height);
+            const newImgData = canvas.toDataURL('image/jpeg');
+            console.log('before write');
+            writeFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), newImgData);
+            console.log('done')
+            
             let imgData = '';
             if (existsSync(String(process.env.IMG_MODIFIED_DATA_PATH))){
                 imgData = readFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), 'utf-8');
@@ -140,7 +148,7 @@ export class Service{
             
             return imgData;
         } catch (error) {
-            console.log('[Service error]: RETURN MODIFIED', error)
+            console.log('[Service return modified error]: RETURN MODIFIED', error)
 
             throw error;
         }

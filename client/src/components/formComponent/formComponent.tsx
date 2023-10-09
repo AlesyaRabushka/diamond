@@ -9,11 +9,12 @@ export const FormComponent:FC = () => {
 
 
     const [imgSystemName, setImgSystemName] = useState();
+    const [imgModifiedSystemName, setModifiedImgSystemName] = useState('');
 
     const [pixelRange, setPixelRange] = useState(0);
 
     const [img, setImg] = useState();
-    const [modifiedImg, setModifiedImg] = useState();
+    const [modifiedImg, setModifiedImg] = useState('');
 
     // upload image from file system
     const handleImage = (e:any) => {
@@ -27,8 +28,10 @@ export const FormComponent:FC = () => {
         return response;
     }
     // get modified image from server
-    const getModifiedImg = async () =>{
-        const response = await ClientService.returnModifiedImg().then(data => setModifiedImg(data))
+    const getModifiedImg = async (imgName:string) =>{
+        console.log('get modified start',imgModifiedSystemName )
+        const response = await ClientService.returnModifiedImg(imgName);
+        setModifiedImg(String(response));
         return response;
     }
     
@@ -44,9 +47,11 @@ export const FormComponent:FC = () => {
 
     const handleModify = async () => {
         // request to modify image
-        await ClientService.modifyImg(String(imgSystemName), 60);
+        const name = await ClientService.modifyImg(String(imgSystemName), 60);
+        setModifiedImgSystemName(name);
+        console.log('modified img name', name);
         // rewuest to show modified image
-        await getModifiedImg();
+        await getModifiedImg(name);
     }
 
     return (
