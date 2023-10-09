@@ -55,17 +55,22 @@ export const FormComponent:FC = () => {
     }
 
     return (
+        <div className="layout">
         <div className="form">
             <div className="input-box">
-            <input type="file" name="file" id="input-file" className="input" onChange={handleImage}/>
-            <label htmlFor="input-file" className="input-file-button">Выбрать файл</label>
-            <label className="input-file-name">{imageName}</label>
-            <button type="button"
-                className="input-file-button"
-                onClick={handleUpload}>
-                    Загрузить
-            </button>
+                <label htmlFor="input-file" className="input-file-button">Выбрать файл</label>
+                <input type="file" name="file" id="input-file" className="input" onChange={handleImage}/>
+                <label className="input-file-name">{imageName}</label>
+                
             </div>
+
+            {/* <div className="button-box"> */}
+                <button type="button"
+                    className="input-file-button"
+                    onClick={handleUpload}>
+                        Загрузить
+                </button>
+            {/* </div> */}
             
             <img src={img} className="uploaded-img"/>
             
@@ -79,12 +84,14 @@ export const FormComponent:FC = () => {
                     setPixelRange(Number(e.target.value))
                 }
             />
-            <label>{pixelRange}</label>
+            <label className="pixelation-label">{pixelRange}</label>
 
-
-            <button type="button" className="input-file-button" onClick={handleModify}>modify</button>
+            {/* <div className="button-box"> */}
+                <button type="button" className="input-file-button" onClick={handleModify}>Изменить</button>
+            {/* </div> */}
 
             <img src={modifiedImg} className="uploaded-img"/>
+        </div>
         </div>
     )
 }

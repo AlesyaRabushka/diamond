@@ -1,8 +1,24 @@
-.form{
-    width: calc(50%);
+.layout{
+    width: 100vw;
+    min-height: 100vh;
 
-    margin-top: calc(15%);
-    background-color: aqua;
+    /* background-color: rgb(152, 199, 243); */
+    background-image: linear-gradient(#6555f7, #92c2e9);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form{
+    width: calc(40%);
+
+    margin-top: calc(10%);
+    background-color: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(15px);
+
+
 
     align-items: center;
     display: flex;
@@ -10,46 +26,76 @@
 
     padding-top: calc(2%);
     padding-bottom: calc(2%);
+    
+    border-radius: 20px;
+    border-color: rgb(10, 74, 131);
+    /* box-shadow: 2px 3px #0b1272; */
+
 }
 
 .input-box{
+    min-height: 50px;
+
     display: flex;
     flex-direction: row;
     align-items: center;
 
+    /* background-color: rgb(201, 157, 241); */
+
 }
 
 .input{
-    /* background-color: antiquewhite;
-
-    border-radius: 35px;
-    box-shadow: 5px;
-
-    width: calc(50%);
-
-    outline: none; */
     visibility: hidden;
 }
 
+.button-box{
+    min-height: 100px;
 
-.input-file-name{
-    color: white
+    background-color: aqua;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: calc(1%);
+    margin-bottom: calc(1%);
+
+
 }
 
+.input-file-name{
+    color: white;
+    font-size: 1.2em;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;    
+}
+
+
+
 .input-file-button{
-    width: calc(20%);
+    width: calc(15%);
+    min-width: 200px;
+    /* height: 40px; */
+
+    margin-top: calc(2%);
+    margin-bottom: calc(2%);
 
     border-radius: 20px;
-    box-shadow: none;
+    box-shadow: 1px 3px #080d58;
+    border: none;
     outline: none;
     
 
+    align-items: center;
+    text-align: center;
+    justify-content: center;
     padding: calc(1%);
     
-    background-color: rgb(51, 81, 182);
+    background-color: rgb(42, 60, 218);
 
     color: white;
     font-size: 1.1em;
+
+    cursor: pointer;
 }
 
 
@@ -61,12 +107,16 @@ input[type='range']{
     -webkit-appearance: none;
     background: transparent;
     cursor: pointer;
+
+    width: calc(40%);
+
+    margin-top: calc(5%);
 }
 
 input[type='range']::-moz-range-track{
-    height: 0.7em;
+    height: 0.85em;
 
-    background-color: rgb(183, 120, 243);
+    background-color: #464fcf;
     border-radius: 20px;
 }
 
@@ -74,7 +124,18 @@ input[type='range']::-moz-range-thumb{
     -webkit-appearance: none;
     appearance: none;
 
-    background-color: antiquewhite;
+    background-color: rgb(210, 203, 219);
+
 
     border-radius: 20px;
+
+    height: 1.8em;
+}
+
+.pixelation-label{
+    margin-top: calc(1%);
+
+    font-size: 1.5em;
+
+    color: white;
 }
