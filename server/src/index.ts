@@ -15,7 +15,10 @@ function bootstrap(){
         app.use(express.urlencoded({
             extended: true,
         }));
-        app.use(cors());
+        app.use(cors({
+            credentials: true,
+            origin: ['http://localhost:3000'],
+        }));
 
         
         app.use('/img', express.static('/img'))

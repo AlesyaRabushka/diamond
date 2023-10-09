@@ -9,13 +9,11 @@ export class Controller{
 
     async uploadImg(request:Request, response:Response){
         try {
-            // const result = await this.service.uploadImg()
-            
-            console.log(Number(process.env.PORT))
+            // console.log('controller', request.body.fileData)
+            const result = await this.service.uploadImg(String(request.file?.filename));
+            console.log('constroller', request.file?.filename)
 
-            return response.status(201).json({
-                img_url: `http://localhost:${Number(process.env.PORT)}/img/${request.file?.filename}`
-            })
+            return response.status(201).json(request.file?.filename);
         } catch (error) {
             console.log('[Controller error]: ', error);
 
@@ -33,16 +31,44 @@ export class Controller{
         }
     }
 
-    async convertImg(request:Request, response:Response){
+    async modifyImg(request:Request, response:Response){
         try {
-            const {path} = request.body;
-            const p: number[][][] = []
+            console.log(request.body.pixelationFactor, request.body.imgName)
+            
+            const path = `${process.env.SYSTEM_PATH}/${request.body.imgName}`
+            console.log(path)
 
-            const result = await this.service.consvertImg(path).then((pixels) => {
-                // p.push(pixels)
+            const result = await this.service.modifyImg(path, Number(request.body.pixelationFactor)).then((pixels) => {
+                // console.log(pixels)
             })
 
-            response.status(201).json(p);
+            response.status(201).json('result');
+        } catch (error) {
+            console.log('[Controller error]: ', error);
+
+            throw error;
+        }
+    }
+
+
+    async returnImg(request:Request, response:Response){
+        try {
+            const result = await this.service.returnImg();
+
+            response.status(200).json(result)
+        } catch (error) {
+            console.log('[Controller error]: ', error);
+
+            throw error;
+        }
+    }
+
+    async returnModifiedImg(request:Request, response:Response){
+        try {
+            
+            const result = await this.service.returnModifiedImg();
+
+            response.status(200).json(result);
         } catch (error) {
             console.log('[Controller error]: ', error);
 

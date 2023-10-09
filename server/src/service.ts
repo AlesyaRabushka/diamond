@@ -1,20 +1,30 @@
 import {createCanvas, loadImage, ImageData} from "canvas";
-
+import {writeFileSync, readFileSync, existsSync} from "fs";
 
 export class Service{
     constructor(){};
 
-    async uploadImg(){
+    async uploadImg(imgName: string){
         try {
-            
+            const path = `${process.env.SYSTEM_PATH}/${imgName}`;
+
+            const img = await loadImage(path);
+            const canvas = createCanvas(img.width, img.height);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const imgData = canvas.toDataURL();
+            console.log(String(process.env.IMG_ORIGINAL_DATA_PATH));
+            writeFileSync(String(process.env.IMG_ORIGINAL_DATA_PATH), imgData);
+
+            return imgData;
         } catch (error) {
-            console.log('[Service error]: ', error);
+            console.log('[Service error]: UPLOAD', error);
 
             throw error;
         }
     }
 
-    async consvertImg(path:string, pixelationFactor:number){
+    async modifyImg(path:string, pixelationFactor:number){
         try {
             const img = await loadImage(path);
 
@@ -29,7 +39,7 @@ export class Service{
             const pixelsData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
             
-            console.log(pixelsData)
+            // console.log(pixelsData)
             // ctx.putImageData(pixelsData, 0, 0);
 
             if (pixelationFactor !== 0){
@@ -54,13 +64,13 @@ export class Service{
             // const c = canvas.toDataURL()
             // ctx.putImageData(c, 0, 0)
             const b = canvas.toDataURL();
-
-            console.log(b)
+            writeFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), b);
+            // console.log('b',b)
             // await this.saveImg(ctx, newData)
             
             return b;
         } catch (error) {
-            console.log('[Service error]: ', error)
+            console.log('[Service error]: MODIFY', error)
 
             throw error;
         }
@@ -87,6 +97,41 @@ export class Service{
             // ctx.putImageData(ImageData(imgData), 0, 0)
         } catch (error) {
             console.log('[Service error]: ', error)
+
+            throw error;
+        }
+    }
+
+    async returnImg(){
+        try {
+
+            let imgData = '';
+            if (existsSync(String(process.env.IMG_ORIGINAL_DATA_PATH))){
+                console.log('find file!')
+                imgData = readFileSync(String(process.env.IMG_ORIGINAL_DATA_PATH), 'utf-8');
+            }
+            
+            
+            // console.log(imgData);
+            return imgData;
+        } catch (error) {
+            console.log('[Service error]: RETURN IMG', error)
+
+            throw error;
+        }
+    }
+
+    async returnModifiedImg(){
+        try {
+            let imgData = '';
+            if (existsSync(String(process.env.IMG_MODIFIED_DATA_PATH))){
+                imgData = readFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), 'utf-8');
+                console.log('here in modified!')
+            }
+            
+            return imgData;
+        } catch (error) {
+            console.log('[Service error]: RETURN MODIFIED', error)
 
             throw error;
         }

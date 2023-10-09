@@ -1,6 +1,6 @@
 import React, { ChangeEvent, HTMLAttributeAnchorTarget, useState } from 'react';
 import './App.css';
-import { FormComponent } from './components/formComponent';
+import { FormComponent } from './components/formComponent/formComponent';
 
 function App() {
 
