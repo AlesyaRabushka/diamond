@@ -119,10 +119,16 @@ export const FormComponent:FC = () => {
 
             <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button>
 
-
-            {colors.map((color:[number, number, number]) => <div className="color" style={{
-                backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-            }} ></div>)}
+            
+            <div className="grid-container">
+                {colors.map((color:[number, number, number]) => 
+                <div className="color" onClick={e => console.log('click')} style={{
+                    backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+                    }} >
+                    <span className="tooltip">Заменить цвет</span>
+                </div>)}
+            </div>
+            
 
         </div>
         </div>
