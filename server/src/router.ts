@@ -23,4 +23,5 @@ router.post('/upload', upload.single('image'), controller.uploadImg.bind(control
 router.get('/returnImg', controller.returnImg.bind(controller));
 router.post('/returnModifiedImg', controller.returnModifiedImg.bind(controller));
 router.post('/modify', controller.modifyImg.bind(controller));
+router.post('/verifyColors', controller.verifyColors.bind(controller));
 // router.get('/img/:name', controller.getImg.bind(controller))

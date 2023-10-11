@@ -64,7 +64,33 @@ export class Controller{
         try {
             
             const result = await this.service.returnModifiedImg(request.body.imgName);
+
             response.status(200).json(result);
+        } catch (error) {
+            console.log('[Controller error]: ', error);
+
+            throw error;
+        }
+    };
+
+    async verifyColors(request:Request, response:Response){
+        try {
+            console.log('controller verify',request.body.imgName)
+            const result = await this.service.verifyColors(request.body.imgName, Number(request.body.colorAmount));
+
+            response.status(201).json(result);
+        } catch (error) {
+            console.log('[Controller error]: VERIFY COLORS', error);
+
+            throw error;
+        }
+    }
+
+    async verify(request:Request, response:Response){
+        try {
+            const result = await this.service.verify(request.body.imgName, Number(request.body.colorAmount));
+
+            response.status(201).json(result)
         } catch (error) {
             console.log('[Controller error]: ', error);
 

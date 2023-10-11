@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { ClientService } from "../../service/client.service";
 import "./formComponent.css";
+import { DropDownComponent } from "../dropDownComponent/dropDownComponent";
 
 export const FormComponent:FC = () => {
 
@@ -9,12 +10,16 @@ export const FormComponent:FC = () => {
 
 
     const [imgSystemName, setImgSystemName] = useState();
-    const [imgModifiedSystemName, setModifiedImgSystemName] = useState('');
+    const [imgModifiedImgSystemName, setModifiedImgSystemName] = useState('');
 
     const [pixelRange, setPixelRange] = useState(0);
 
     const [img, setImg] = useState();
     const [modifiedImg, setModifiedImg] = useState('');
+
+    // const [colors, setColors] = useState<any[]>([]);
+    const [colors, setColors] = useState<any>([]);
+    // const colors:Array<any[]> = [];
 
     // upload image from file system
     const handleImage = (e:any) => {
@@ -29,7 +34,7 @@ export const FormComponent:FC = () => {
     }
     // get modified image from server
     const getModifiedImg = async (imgName:string) =>{
-        console.log('get modified start',imgModifiedSystemName )
+        console.log('get modified start',imgName )
         const response = await ClientService.returnModifiedImg(imgName);
         setModifiedImg(String(response));
         return response;
@@ -47,12 +52,19 @@ export const FormComponent:FC = () => {
 
     const handleModify = async () => {
         // request to modify image
-        const name = await ClientService.modifyImg(String(imgSystemName), Number(pixelRange)*10);
+        const name = await ClientService.modifyImg(String(imgSystemName), Number(pixelRange));
         setModifiedImgSystemName(name);
         console.log('modified img name', name);
         // rewuest to show modified image
-        await getModifiedImg(name);
-    }
+        await getModifiedImg(String(name));
+    };
+
+    const handleVerifyColors = async () => {
+        console.log('name',imgModifiedImgSystemName)
+        const data = await ClientService.verifyColors(imgModifiedImgSystemName, 6);
+        console.log('data', data)
+        setColors(() => data);
+    };
 
     return (
         <div className="layout">
@@ -76,7 +88,7 @@ export const FormComponent:FC = () => {
             
             <input type="range"
                 min={0}
-                max={10}
+                max={100}
                 value={pixelRange}
                 step={1}
                 className="pixelation"
@@ -86,11 +98,21 @@ export const FormComponent:FC = () => {
             />
             <label className="pixelation-label">{pixelRange}</label>
 
-            {/* <div className="button-box"> */}
-                <button type="button" className="input-file-button" onClick={handleModify}>Изменить</button>
-            {/* </div> */}
+            <button type="button" className="input-file-button" onClick={handleModify}>Изменить</button>
+           
 
             <img src={modifiedImg} className="uploaded-img"/>
+
+
+            <DropDownComponent/>
+
+            <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button>
+
+
+            {colors.map((color:[number, number, number]) => <div className="color" style={{
+                backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+            }} ></div>)}
+
         </div>
         </div>
     )

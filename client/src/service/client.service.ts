@@ -48,8 +48,22 @@ export class ClientService{
     // return modified image
     static async returnModifiedImg(imgName:string){
         try {
+            console.log('in return modified', imgName);
             const response = await $host.post('/returnModifiedImg', {imgName});
-            console.log(response.data);
+            console.log('return modified data',response.data);
+            return response.data;
+        } catch (error) {
+            console.log('[ClientService] error:', error);
+            throw error;
+        }
+    }
+
+    static async verifyColors(imgName:string, colorAmount:number){
+        try {
+            console.log(imgName)
+            const response = await $host.post('/verifyColors', {imgName, colorAmount});
+            console.log('verify', response.data);
+
             return response.data;
         } catch (error) {
             console.log('[ClientService] error:', error);
