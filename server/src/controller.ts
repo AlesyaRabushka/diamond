@@ -77,7 +77,6 @@ export class Controller{
         try {
             console.log('controller verify',request.body.imgName)
             const result = await this.service.verifyColors(request.body.imgName, Number(request.body.colorAmount));
-
             response.status(201).json(result);
         } catch (error) {
             console.log('[Controller error]: VERIFY COLORS', error);

@@ -24,6 +24,8 @@ export class Service{
             // remove img
             // unlinkSync(path);
 
+            console.log(canvas.width, canvas.height);
+
 
             return imgData;
         } catch (error) {
@@ -83,20 +85,21 @@ export class Service{
 
             ctx.drawImage(pixelatedImg, 0, 0, width, height);
             const newImgData = canvas.toDataURL('image/jpeg');
-            console.log('before write');
-            writeFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), newImgData);
-            console.log('done')
+            // console.log('before write');
+            // writeFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), newImgData);
+            // console.log('done')
             
-            let imgData = '';
-            if (existsSync(String(process.env.IMG_MODIFIED_DATA_PATH))){
-                imgData = readFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), 'utf-8');
-                console.log(String(process.env.IMG_MODIFIED_DATA_PATH));
-                console.log('here in modified!')
-            }
+            // let imgData = '';
+            // if (existsSync(String(process.env.IMG_MODIFIED_DATA_PATH))){
+            //     imgData = readFileSync(String(process.env.IMG_MODIFIED_DATA_PATH), 'utf-8');
+            //     console.log(String(process.env.IMG_MODIFIED_DATA_PATH));
+            //     console.log('here in modified!')
+            // }
 
-            unlinkSync(String(process.env.IMG_MODIFIED_DATA_PATH));
+            // unlinkSync(String(process.env.IMG_MODIFIED_DATA_PATH));
             
-            return imgData;
+            console.log(width, height)
+            return {newImgData, width, height};
         } catch (error) {
             console.log('[Service return modified error]: RETURN MODIFIED', error)
 

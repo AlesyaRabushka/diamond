@@ -19,6 +19,8 @@ export const FormComponent:FC = () => {
 
     const [value, setValue] = useState('Выбрать');
 
+    const [size, setSize] = useState({width: 0, height:0});
+
     // const [colors, setColors] = useState<any[]>([]);
     const [colors, setColors] = useState<any>([]);
     // const colors:Array<any[]> = [];
@@ -37,9 +39,12 @@ export const FormComponent:FC = () => {
     // get modified image from server
     const getModifiedImg = async (imgName:string) =>{
         console.log('get modified start',imgName )
-        const response = await ClientService.returnModifiedImg(imgName);
-        setModifiedImg(String(response));
-        return response;
+        const imgObject = await ClientService.returnModifiedImg(imgName);
+
+        setSize({width: imgObject.width / pixelRange, height: imgObject.height / pixelRange});
+        console.log(size);
+        setModifiedImg(String(imgObject.newImgData));
+        return imgObject;
     }
     
 
@@ -54,11 +59,12 @@ export const FormComponent:FC = () => {
 
     const handleModify = async () => {
         // request to modify image
-        const name = await ClientService.modifyImg(String(imgSystemName), Number(pixelRange));
-        setModifiedImgSystemName(name);
-        console.log('modified img name', name);
+        const imgObject = await ClientService.modifyImg(String(imgSystemName), Number(pixelRange));
+        console.log('modified img name', imgObject);
+        setModifiedImgSystemName(imgObject);
+
         // rewuest to show modified image
-        await getModifiedImg(String(name));
+        await getModifiedImg(String(imgObject));
     };
 
     const handleVerifyColors = async () => {
@@ -105,6 +111,8 @@ export const FormComponent:FC = () => {
            
 
             <img src={modifiedImg} className="uploaded-img"/>
+
+            {imgModifiedImgSystemName && <label className="img-size-label">{size.width}x{size.height}</label>}
 
 
             <DropDownComponent setValue={setValue} value={value}/>
