@@ -45,7 +45,18 @@ export class Service{
                 
                 return paths.pop();
             }
+            
+            console.log((await img).bitmap.height, (await img).bitmap.width);
+            if ((await img).bitmap.width % pixelationFactor != 0){
+                (await img).resize((await img).bitmap.width - ((await img).bitmap.width % pixelationFactor), (await img).bitmap.height);
+            }
+            if ((await img).bitmap.height % pixelationFactor != 0){
+                (await img).resize((await img).bitmap.width, (await img).bitmap.height - ((await img).bitmap.height % pixelationFactor));
+            }
+            
+            console.log((await img).bitmap.height, (await img).bitmap.width);
             (await img).pixelate(pixelationFactor).write(`${process.env.SYSTEM_PATH}/${newImgName}`);
+            
             console.log('NEW NAME', newImgName);
 
             return newImgName;
