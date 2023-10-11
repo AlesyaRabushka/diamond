@@ -17,6 +17,8 @@ export const FormComponent:FC = () => {
     const [img, setImg] = useState();
     const [modifiedImg, setModifiedImg] = useState('');
 
+    const [value, setValue] = useState('Выбрать');
+
     // const [colors, setColors] = useState<any[]>([]);
     const [colors, setColors] = useState<any>([]);
     // const colors:Array<any[]> = [];
@@ -60,8 +62,9 @@ export const FormComponent:FC = () => {
     };
 
     const handleVerifyColors = async () => {
-        console.log('name',imgModifiedImgSystemName)
-        const data = await ClientService.verifyColors(imgModifiedImgSystemName, 6);
+        console.log('name',imgModifiedImgSystemName);
+        console.log(value);
+        const data = await ClientService.verifyColors(imgModifiedImgSystemName, Number(value));
         console.log('data', data)
         setColors(() => data);
     };
@@ -104,7 +107,7 @@ export const FormComponent:FC = () => {
             <img src={modifiedImg} className="uploaded-img"/>
 
 
-            <DropDownComponent/>
+            <DropDownComponent setValue={setValue} value={value}/>
 
             <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button>
 
