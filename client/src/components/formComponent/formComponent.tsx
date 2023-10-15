@@ -5,6 +5,7 @@ import { DropDownComponent } from "../dropDownComponent/dropDownComponent";
 
 export const FormComponent:FC = () => {
 
+
     const [image, setImage] = useState('');
     const [imageName, setImageName] = useState('');
 
@@ -21,9 +22,13 @@ export const FormComponent:FC = () => {
 
     const [size, setSize] = useState({width: 0, height:0});
 
-    // const [colors, setColors] = useState<any[]>([]);
+    // color change
+    const [showPallete, setShowPallete] = useState(false);
+    const [changedColor, setChangedColor] = useState([0, 0, 0]);
+
+    
     const [colors, setColors] = useState<any>([]);
-    // const colors:Array<any[]> = [];
+    const [newColorsImg, setNewColorsImg] = useState('');
 
     // upload image from file system
     const handleImage = (e:any) => {
@@ -75,6 +80,14 @@ export const FormComponent:FC = () => {
         setColors(() => data);
     };
 
+
+    const handleColorChange = async (color: [number, number, number], newColor: [number, number, number]) => {
+        console.log('in color change')
+        const img = await ClientService.colorChange(imgModifiedImgSystemName, Number(pixelRange), color, newColor, colors);
+        setNewColorsImg(img);
+        console.log('finish', img)
+    }
+
     return (
         <div className="layout">
         <div className="form">
@@ -97,7 +110,7 @@ export const FormComponent:FC = () => {
             
             <input type="range"
                 min={0}
-                max={100}
+                max={100}   
                 value={pixelRange}
                 step={1}
                 className="pixelation"
@@ -122,13 +135,22 @@ export const FormComponent:FC = () => {
             
             <div className="grid-container">
                 {colors.map((color:[number, number, number]) => 
-                <div className="color" onClick={e => console.log('click')} style={{
+                <div className="color" onClick={e => {setShowPallete(!showPallete); 
+                    setChangedColor(color); 
+                    handleColorChange(color, [1,2,3])
+                    }} style={{
                     backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
                     }} >
+
                     <span className="tooltip">Заменить цвет</span>
+
+                    
                 </div>)}
+                {showPallete && 
+                        <div>ofofof</div>
+                    }
             </div>
-            
+            <img src={newColorsImg} className="uploaded-img"/>
 
         </div>
         </div>

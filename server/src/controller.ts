@@ -85,9 +85,21 @@ export class Controller{
         }
     }
 
-    async verify(request:Request, response:Response){
+    // async verify(request:Request, response:Response){
+    //     try {
+    //         const result = await this.service.verify(request.body.imgName, Number(request.body.colorAmount));
+
+    //         response.status(201).json(result)
+    //     } catch (error) {
+    //         console.log('[Controller error]: ', error);
+
+    //         throw error;
+    //     }
+    // }
+
+    async changeColor(request:Request, response:Response){
         try {
-            const result = await this.service.verify(request.body.imgName, Number(request.body.colorAmount));
+            const result = await this.service.changeColor(request.body.imgData, request.body.pixelationFactor, request.body.oldColor, request.body.newColor, request.body.colorArray);
 
             response.status(201).json(result)
         } catch (error) {

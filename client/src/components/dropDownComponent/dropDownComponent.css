@@ -41,6 +41,8 @@
     height: calc(100%);
 
     background-color: aliceblue;
+    /* background-color: rgb(204, 50, 218);
+    background-color: rgb(70, 34, 155); */
 
     border-radius: 20px;
     border: 1px solid #16187c;
@@ -55,4 +57,8 @@
 
 .color-amount-item:hover{
     background-color: rgb(210, 214, 243);
+}
+
+.g{
+    background-color: rgb(120, 100, 60);
 }

@@ -70,4 +70,19 @@ export class ClientService{
             throw error;
         }
     }
+
+
+    static async colorChange(imgData:string, pixelationFactor:number, oldColor: [number, number, number], newColor:[number, number, number], colorArray:Array<number[]>){
+        try {
+            console.log('array',colorArray)
+            const response = await $host.post('/change-color', {imgData, pixelationFactor, oldColor, newColor, colorArray});
+
+            console.log('response',response)
+
+            return response.data;
+        } catch (error) {
+            console.log('[ClientService] color change:', error);
+            throw error;
+        }
+    }
 }
