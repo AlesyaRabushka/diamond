@@ -21,10 +21,11 @@ export const FormComponent:FC = () => {
             });
 
             reader.readAsDataURL(image);
+            console.log('changed')
         }
     }, [image])
 
-    const [imgModifiedImgSystemName, setModifiedImgSystemName] = useState('');
+    // const [imgModifiedImgSystemName, setModifiedImgSystemName] = useState('');
 
     const [pixelRange, setPixelRange] = useState(0);
 
@@ -58,6 +59,7 @@ export const FormComponent:FC = () => {
         }
     };
 
+    // return color pallete of image
     const handleVerifyColors = async () => {
         if (image){
             const data = await ClientService.verifyColorsV2(image, Number(value));
@@ -66,15 +68,20 @@ export const FormComponent:FC = () => {
         }
     };
 
-
+    // change clicked color to the given one
     const handleColorChange = async (color: [number, number, number], newColor: [number, number, number]) => {
-        console.log('in color change')
-        const img = await ClientService.colorChange(String(imgModifiedImgSystemName), Number(pixelRange), color, newColor, colors);
-        setNewColorsImg(img);
-        console.log('finish', img)
+        if (image){
+            console.log('in color change')
+            const imgData = await ClientService.colorChangeV2(image, Number(pixelRange), color, newColor, colors);
+            // setNewColorsImg(imgData);
+            const imgBlob = dataURItoBlob(imgData);
+            // console.log(imgBlob)
+            setImage(new File([imgBlob], 'diamond.png'))
+        }
     }
 
-    const handleSave = async() => {
+    // download image
+    const handleDownload = async() => {
         if (image){
             fileDownload(image, `${image.name}`)
         }
@@ -107,7 +114,7 @@ export const FormComponent:FC = () => {
             <button type="button" className="input-file-button" onClick={handleModify}>Изменить</button>
 
 
-            {imgModifiedImgSystemName && <label className="img-size-label">{size.width}x{size.height}</label>}
+            {image && <label className="img-size-label">{size.width}x{size.height}</label>}
 
 
             <DropDownComponent setValue={setValue} value={value}/>
@@ -132,10 +139,10 @@ export const FormComponent:FC = () => {
                         <div className="color-pallete">ofofof</div>
                     }
             </div>
-            <img src={newColorsImg} className="uploaded-img"/>
+            {/* <img src={newColorsImg} className="uploaded-img"/> */}
 
             
-            <button type="button" className="input-file-button" onClick={handleSave}>Скачать</button>
+            <button type="button" className="input-file-button" onClick={handleDownload}>Скачать</button>
 
         </div>
         </div>

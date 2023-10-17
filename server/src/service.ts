@@ -210,7 +210,7 @@ export class Service{
             console.log('img name',imgData);
             const image = await loadImage(`${process.env.SYSTEM_PATH}/${imgData}`);
             console.log('image', image);
-
+           
             const canvas = createCanvas(image.width, image.height)
             const ctx = canvas.getContext('2d');
 
@@ -229,10 +229,10 @@ export class Service{
     }
 
 
-    async changePixelColor(imgData:string, pixelationFactor:number, oldColor:[number, number, number], newColor:[number, number, number], colorArray:Array<number[]>){
+    async changePixelColor(imgName:string, pixelationFactor:number, oldColor:Array<number>, newColor:Array<number>, colorArray:Array<number[]>){
         try {
-            let {imageData, canvas, ctx} = await this.getImgData(imgData);
-            
+            let {imageData, canvas, ctx} = await this.getImgData(imgName);
+            // console.log('id',imageData.data)
             for (let i = 0; i < imageData.data.length; i += 4){
                 const color = [imageData.data[i], imageData.data[i+1], imageData.data[i+2]]
                 const closestColor = await this.closestColor(color, colorArray);
@@ -251,6 +251,8 @@ export class Service{
             ctx.putImageData(imageData, 0, 0);
 
             const data = canvas.toDataURL();
+
+            unlinkSync(`${process.env.SYSTEM_PATH}/${imgName}`);
 
             return data;
         } catch (error) {
@@ -271,6 +273,32 @@ export class Service{
             throw error;
         }
     }
+
+    async changeColorV2(file:Express.Multer.File, pixelationFactor:number, oldColorStr:Array<string>, newColorStr:Array<string>, colorArrayStr:Array<string>){
+        try {
+
+            const oldColor = oldColorStr.map(item => parseInt(item, 10));
+            const newColor = newColorStr.map(item => parseInt(item, 10));
+            let colorArray:Array<number[]> = [];
+            console.log(colorArrayStr)
+            for (let i = 0 ; i < colorArrayStr.length; i ++){
+                const arr = colorArrayStr[i].split(',').map(item => parseInt(item, 10));
+                // arr.push(Number(colorArrayStr[i][0]), Number(colorArrayStr[i][1]), Number(colorArrayStr[i][2]))
+                
+                colorArray.push(arr)
+            }
+            console.log(colorArray);
+            const result = await this.changePixelColor(file.filename, pixelationFactor, oldColor, newColor, colorArray);
+
+            return result;
+        } catch (error) {
+            console.log('[Service change color]:', error);
+
+            throw error;
+        }
+    }
+
+    
 }
 
 export const service = new Service();

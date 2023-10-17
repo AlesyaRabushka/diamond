@@ -18,19 +18,6 @@ export class ClientService{
         }
     }
 
-    // modify image
-    static async modifyImg(imgName: string, pixelationFactor:number){
-        try {
-            console.log('in modify', imgName, pixelationFactor)
-            const response = await $host.post('/modify', {imgName, pixelationFactor})
-            console.log('res data', response.data);
-            return response.data;
-        } catch (error) {
-            console.log('[ClientService] error:', error);
-            throw error;
-        }
-    }
-
     // modify image v2
     static async modifyImgV2(file: File, pixelationFactor: number){
         try {
@@ -67,6 +54,39 @@ export class ClientService{
         }
     }
 
+    static async colorChangeV2(file:File, pixelationFactor:number, oldColor: [number, number, number], newColor:[number, number, number], colorArray:Array<number[]>){
+        try {
+            console.log('array',colorArray)
+            const data = new FormData();
+
+            data.append('image', file);
+            data.append('pixelationFactor', String(pixelationFactor));
+            for (let i = 0; i < oldColor.length; i++){
+                data.append('oldColor', String(oldColor[i]));
+            }
+            for (let i = 0; i < newColor.length; i++){
+                data.append('newColor', String(newColor[i]));
+            }
+            const arr1 = []
+            for (let i = 0; i < colorArray.length; i++){
+                data.append('colorArray', String(colorArray[i]));
+            }
+            
+            // data.append('newColor', JSON.stringify(oldColor));
+            // data.append('newColor', JSON.stringify(newColor));
+            // data.append('colorArray', JSON.stringify(colorArray));
+
+            const response = await $host.post('/change-color-v2', data);
+
+            console.log('response color change v2',response.data)
+
+            return response.data;
+        } catch (error) {
+            console.log('[ClientService] color change:', error);
+            throw error;
+        }
+    }
+
     // return original image
     // static async returnImg(){
     //     try {
@@ -93,6 +113,21 @@ export class ClientService{
     //         throw error;
     //     }
     // }
+
+
+    // modify image
+    static async modifyImg(imgName: string, pixelationFactor:number){
+        try {
+            console.log('in modify', imgName, pixelationFactor)
+            const response = await $host.post('/modify', {imgName, pixelationFactor})
+            console.log('res data', response.data);
+            return response.data;
+        } catch (error) {
+            console.log('[ClientService] error:', error);
+            throw error;
+        }
+    }
+
 
     static async verifyColors(imgName:string, colorAmount:number){
         try {
@@ -121,5 +156,7 @@ export class ClientService{
             throw error;
         }
     }
+
+    
 
 }
