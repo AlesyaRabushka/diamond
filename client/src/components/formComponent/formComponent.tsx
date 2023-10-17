@@ -15,6 +15,7 @@ export const FormComponent:FC = () => {
     const [image, setImage] = useState<File | undefined>(undefined);
     const [imageDataUrl, setImageDataUrl] = useState<string>('');
 
+    // DRAG & DROP
     const [drag, setDrag] = useState(false);
 
     useEffect(() => {
@@ -29,12 +30,11 @@ export const FormComponent:FC = () => {
         }
     }, [image])
 
-    // const [imgModifiedImgSystemName, setModifiedImgSystemName] = useState('');
-
+    // pixelationFactor
     const [pixelRange, setPixelRange] = useState(0);
-
+    // color amount
     const [value, setValue] = useState('Выбрать');
-
+    // img size parameters
     const [size, setSize] = useState({width: 0, height:0});
 
     // color change
@@ -44,6 +44,11 @@ export const FormComponent:FC = () => {
     
     const [colors, setColors] = useState<any>([]);
     const [alreadyChanged, setAlreadyChanged] = useState<any>([]);
+
+    // check if image has been modified
+    const [modified, setModified] = useState(false);
+    // check if image colors have been changed
+    const [colorChange, setColorChange] = useState(false);
 
     // upload image from file system
     const handleImageUpload = (e:any) => {
@@ -59,7 +64,8 @@ export const FormComponent:FC = () => {
             setSize({width:width, height:height})
             const imgBlob = dataURItoBlob(data);
             // console.log(imgBlob)
-            setImage(new File([imgBlob], 'diamond.png'))
+            setImage(new File([imgBlob], 'diamond.png'));
+            setModified(true);
         }
     };
 
@@ -67,7 +73,7 @@ export const FormComponent:FC = () => {
     const handleVerifyColors = async () => {
         if (image){
             const data = await ClientService.verifyColorsV2(image, Number(value));
-            console.log('data', data)
+            
             setColors(() => data);
         }
     };
@@ -75,26 +81,14 @@ export const FormComponent:FC = () => {
     // change clicked color to the given one
     const handleColorChange = async (color:Array<number>, newColor: Array<number>) => {
         if (image){
-            console.log('in color change');
-            console.log('changed')
-            console.log(alreadyChanged)
-
             const {result, changedArray} = await ClientService.colorChangeV2(image, Number(pixelRange), color, newColor, colors, mainColors);
-            // setNewColorsImg(imgData);
+            
             setAlreadyChanged(changedArray);
+
             const imgBlob = dataURItoBlob(result);
-            // console.log(imgBlob)
             setImage(new File([imgBlob], 'diamond.png'));
-            // console.log('new color', newColor   )
-            // console.log('colors used',alreadyChanged)
-            // usedColors.push(newColor);
-            // let arr = [];
-            // for (let i = 0; i < usedColors.length; i++){
-            //     arr.push(usedColors[i])
-            // }
-            // arr.push(newColor)
-            // console.log('used: ',arr);
-            // setAlreadyChanged(arr);
+            
+            setColorChange(true);
         }
     }
 
@@ -111,7 +105,7 @@ export const FormComponent:FC = () => {
         <div className="layout">
         <div className="form">
             
-            
+            {/* ----- DRAG & DROP area */}
             {drag ?
                     <div className="drag-area"
                         onDragStart={e => {
@@ -160,67 +154,87 @@ export const FormComponent:FC = () => {
 
             <img src={imageDataUrl} className="uploaded-img"/>
             
-            <input type="range"
-                min={0}
-                max={100}   
-                value={pixelRange}
-                step={1}
-                className="pixelation"
-                onChange={e => 
-                    setPixelRange(Number(e.target.value))
-                }
-            />
-            <label className="pixelation-label">{pixelRange}</label>
 
-            <button type="button" className="input-file-button" onClick={handleModify}>Изменить</button>
-
-
-            {image && <label className="img-size-label">{size.width}x{size.height}</label>}
-
-
-            <DropDownComponent setValue={setValue} value={value}/>
-
-            <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button>
-
-
-            <div className="image-colors-pallete">
-                <div className="grid-container">
-                    {colors.map((color:[number, number, number]) => 
-                    <div className="color" onClick={e => {
-                            setShowPallete(!showPallete); 
-                            setChangedColor(color); 
-                            // handleColorChange(color, [255, 128, 75])
-                        }} 
-                        style={{
-                        backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-                        }} >
-
-                        <span className="tooltip">Заменить цвет</span>
-                    </div>)}                    
-                </div>
-            </div>
-
-            {showPallete && 
-                    <div className="color-pallete">
-                        <div className="grid-container">
-                            {mainColors.map(newColor => 
-                                <div className="color" onClick={e => {
-                                    handleColorChange(changedColor, newColor);
-                                    setShowPallete(!showPallete);
-                                }}
-                                style={{
-                                    backgroundColor: `rgb(${newColor[0]}, ${newColor[1]}, ${newColor[2]})`
-                                }}>
-                                    
-                                </div>
-                            )}
-                        </div>
-                        </div>
-                }
-            {/* <img src={newColorsImg} className="uploaded-img"/> */}
-
+             {/* ----- FIRST STEP => when image UPLOADED */}
+            {image &&
             
-            <button type="button" className="input-file-button" onClick={handleDownload}>Скачать</button>
+              <div className="uploaded-image-content">
+                    <input type="range"
+                    min={0}
+                    max={100}   
+                    value={pixelRange}
+                    step={1}
+                    className="pixelation"
+                    onChange={e => 
+                        setPixelRange(Number(e.target.value))
+                    }
+                    />
+                    <label className="pixelation-label">{pixelRange}</label>
+
+                    <button type="button" className="input-file-button" onClick={handleModify}>Изменить</button>
+
+                    {/* ----- SECOND STEP => when image modified */}
+                    {modified &&
+
+                        <>
+                        <label className="img-size-label">{size.width}x{size.height}</label>
+                        <DropDownComponent setValue={setValue} value={value}/>
+
+                        {/* ----- THIRD STEP => when set colors amount */}
+                        {value != 'Выбрать' &&
+                        
+                            <>
+                            <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button>
+        
+        
+                            <div className="image-colors-pallete">
+                                <div className="grid-container">
+                                    {colors.map((color:[number, number, number]) => 
+                                    <div className="color" onClick={e => {
+                                            setShowPallete(!showPallete); 
+                                            setChangedColor(color); 
+                                        }} 
+                                        style={{
+                                        backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+                                        }} >
+        
+                                        <span className="tooltip">Заменить цвет</span>
+                                    </div>)}                    
+                                </div>
+                            </div>
+        
+                            {showPallete && 
+                                <div className="color-pallete">
+                                    <div className="grid-container">
+                                        {mainColors.map(newColor => 
+                                            <div className="color" onClick={e => {
+                                                handleColorChange(changedColor, newColor);
+                                                setShowPallete(!showPallete);
+                                            }}
+                                            style={{
+                                                backgroundColor: `rgb(${newColor[0]}, ${newColor[1]}, ${newColor[2]})`
+                                            }}>
+                                                
+                                            </div>
+                                        )}
+                                    </div>
+                                    </div>
+                            }
+
+                            {colorChange &&
+                                <>
+                                    <label style={{fontSize:20, fontFamily:"-moz-initial", color:"white"}}>Изменения успешно применены!</label>
+                                    <button type="button" className="input-file-button" onClick={handleDownload}>Скачать</button>
+                                </>
+                            }
+                            </>
+                        }
+
+                        </>
+                    }
+                </div>
+            
+            }
 
         </div>
         </div>

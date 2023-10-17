@@ -33,7 +33,7 @@ export const DropDownComponent = ({setValue, value}:{setValue:any, value: string
     return (
         <div>
             {/* <button type="button" onClick={click} >{value}</button> */}
-            <div className="color-amount-button" ref={activeRefDiv} onClick={click} onBlur={(e: React.FocusEvent<HTMLDivElement>):void=> dismiss(e)}>
+            <div className="input-file-button" ref={activeRefDiv} onClick={click} onBlur={(e: React.FocusEvent<HTMLDivElement>):void=> dismiss(e)}>
                 {value}
                 {/* <button ref={activeRefBut}  onClick={e => console.log('d')}><ArrowDropDownCircleIcon/></button> */}
             </div>

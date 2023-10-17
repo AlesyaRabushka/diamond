@@ -124,10 +124,23 @@
     cursor: pointer;
 }
 
+.input-file-button:hover{
+    background-color: rgb(48, 67, 231);
+}
+
 
 .uploaded-img{
     width: calc(40%);
 }
+
+.uploaded-image-content{
+    width: calc(100%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 
 input[type='range']{
     -webkit-appearance: none;
