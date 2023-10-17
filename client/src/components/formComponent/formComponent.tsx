@@ -3,7 +3,7 @@ import { ClientService } from "../../service/client.service";
 import "./formComponent.css";
 import { DropDownComponent } from "../dropDownComponent/dropDownComponent";
 import {dataURItoBlob} from "../../helpers/helpers"
-
+import fileDownload from "js-file-download"
 
 
 export const FormComponent:FC = () => {
@@ -54,7 +54,7 @@ export const FormComponent:FC = () => {
 
             const imgBlob = dataURItoBlob(imgDataObject);
             // console.log(imgBlob)
-            setImage(new File([imgBlob], 'somename.png'))
+            setImage(new File([imgBlob], 'diamond.png'))
         }
     };
 
@@ -72,6 +72,12 @@ export const FormComponent:FC = () => {
         const img = await ClientService.colorChange(String(imgModifiedImgSystemName), Number(pixelRange), color, newColor, colors);
         setNewColorsImg(img);
         console.log('finish', img)
+    }
+
+    const handleSave = async() => {
+        if (image){
+            fileDownload(image, `${image.name}`)
+        }
     }
 
     return (
@@ -127,6 +133,9 @@ export const FormComponent:FC = () => {
                     }
             </div>
             <img src={newColorsImg} className="uploaded-img"/>
+
+            
+            <button type="button" className="input-file-button" onClick={handleSave}>Скачать</button>
 
         </div>
         </div>
