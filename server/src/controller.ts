@@ -47,36 +47,63 @@ export class Controller{
         }
     }
 
-
-    async returnImg(request:Request, response:Response){
+    async modifyImgV2(request:Request, response:Response){
         try {
-            const result = await this.service.returnImg();
+            const file = request.file!;
+            const result = await this.service.modifyImgV2(file, Number(request.body.pixelationFactor));
 
-            response.status(200).json(result)
+            response.status(201).json(result);
         } catch (error) {
-            console.log('[Controller error]: ', error);
+            console.log('[Controller error] modify img v2: ', error);
 
             throw error;
         }
     }
 
-    async returnModifiedImg(request:Request, response:Response){
-        try {
+
+    // async returnImg(request:Request, response:Response){
+    //     try {
+    //         const result = await this.service.returnImg();
+
+    //         response.status(200).json(result)
+    //     } catch (error) {
+    //         console.log('[Controller error]: ', error);
+
+    //         throw error;
+    //     }
+    // }
+
+    // async returnModifiedImg(request:Request, response:Response){
+    //     try {
             
-            const result = await this.service.returnModifiedImg(request.body.imgName);
+    //         const result = await this.service.returnModifiedImg(request.body.imgName);
 
-            response.status(200).json(result);
-        } catch (error) {
-            console.log('[Controller error]: ', error);
+    //         response.status(200).json(result);
+    //     } catch (error) {
+    //         console.log('[Controller error]: ', error);
 
-            throw error;
-        }
-    };
+    //         throw error;
+    //     }
+    // };
 
     async verifyColors(request:Request, response:Response){
         try {
             console.log('controller verify',request.body.imgName)
             const result = await this.service.verifyColors(request.body.imgName, Number(request.body.colorAmount));
+            response.status(201).json(result);
+        } catch (error) {
+            console.log('[Controller error]: VERIFY COLORS', error);
+
+            throw error;
+        }
+    }
+
+    async verifyColorsV2(request:Request, response:Response){
+        try {
+            const file = request.file!;
+            console.log(file.filename)
+
+            const result = await this.service.verifyColorsV2(file, Number(request.body.colorAmount));
             response.status(201).json(result);
         } catch (error) {
             console.log('[Controller error]: VERIFY COLORS', error);

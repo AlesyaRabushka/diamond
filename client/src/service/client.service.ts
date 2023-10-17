@@ -31,32 +31,68 @@ export class ClientService{
         }
     }
 
+    // modify image v2
+    static async modifyImgV2(file: File, pixelationFactor: number){
+        try {
+            const data = new FormData();
+
+            data.append('image', file);
+            data.append('pixelationFactor', String(pixelationFactor));
+            
+            const response = await $host.post('/modify-v2', data)
+
+            console.log(response.data);
+
+            return response.data;
+        } catch (error) {
+            console.log('[ClientService] in modifyImgV2 error:', error);
+            throw error;
+        }
+    }
+
+    static async verifyColorsV2(file:File, colorAmount:number){
+        try {
+            const data = new FormData();
+
+            data.append('image', file);
+            data.append('colorAmount', String(colorAmount));
+            console.log('data sent')
+            const response = await $host.post('/verifyColors-v2', data);
+            console.log('verify', response.data);
+
+            return response.data;
+        } catch (error) {
+            console.log('[ClientService] verify v2 derror:', error);
+            throw error;
+        }
+    }
+
     // return original image
-    static async returnImg(){
-        try {
-            const response = await $host.get('/returnImg');
+    // static async returnImg(){
+    //     try {
+    //         const response = await $host.get('/returnImg');
 
-            console.log('response',response.data);
+    //         console.log('response',response.data);
 
-            return response.data;
-        } catch (error) {
-            console.log('[ClientService] error:', error);
-            throw error;
-        }
-    }
+    //         return response.data;
+    //     } catch (error) {
+    //         console.log('[ClientService] error:', error);
+    //         throw error;
+    //     }
+    // }
 
-    // return modified image
-    static async returnModifiedImg(imgName:string){
-        try {
-            console.log('in return modified', imgName);
-            const response = await $host.post('/returnModifiedImg', {imgName});
-            console.log('return modified data',response.data);
-            return response.data;
-        } catch (error) {
-            console.log('[ClientService] error:', error);
-            throw error;
-        }
-    }
+    // // return modified image
+    // static async returnModifiedImg(imgName:string){
+    //     try {
+    //         console.log('in return modified', imgName);
+    //         const response = await $host.post('/returnModifiedImg', {imgName});
+    //         console.log('return modified data',response.data);
+    //         return response.data;
+    //     } catch (error) {
+    //         console.log('[ClientService] error:', error);
+    //         throw error;
+    //     }
+    // }
 
     static async verifyColors(imgName:string, colorAmount:number){
         try {

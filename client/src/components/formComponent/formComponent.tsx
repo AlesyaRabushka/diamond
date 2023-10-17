@@ -2,21 +2,31 @@ import { FC, useEffect, useState } from "react";
 import { ClientService } from "../../service/client.service";
 import "./formComponent.css";
 import { DropDownComponent } from "../dropDownComponent/dropDownComponent";
+import {dataURItoBlob} from "../../helpers/helpers"
+
+
 
 export const FormComponent:FC = () => {
 
+    // uploaded image
+    const [image, setImage] = useState<File | undefined>(undefined);
+    const [imageDataUrl, setImageDataUrl] = useState<string>('');
 
-    const [image, setImage] = useState('');
-    const [imageName, setImageName] = useState('');
+    useEffect(() => {
+        if (image){
+            const reader = new FileReader();
 
+            reader.addEventListener("load", () => {
+                setImageDataUrl(reader.result as string);
+            });
 
-    const [imgSystemName, setImgSystemName] = useState();
+            reader.readAsDataURL(image);
+        }
+    }, [image])
+
     const [imgModifiedImgSystemName, setModifiedImgSystemName] = useState('');
 
     const [pixelRange, setPixelRange] = useState(0);
-
-    const [img, setImg] = useState();
-    const [modifiedImg, setModifiedImg] = useState('');
 
     const [value, setValue] = useState('Выбрать');
 
@@ -31,59 +41,35 @@ export const FormComponent:FC = () => {
     const [newColorsImg, setNewColorsImg] = useState('');
 
     // upload image from file system
-    const handleImage = (e:any) => {
-        setImage(e.target.files[0])
-        setImageName(e.target.files[0].name)
+    const handleImageUpload = (e:any) => {
+        const file = e.target.files[0];
+        setImage(file);
     }
 
-    // get originall image from server
-    const getImg = async () =>{
-        const response = await ClientService.returnImg().then(data => setImg(data))
-        return response;
-    }
-    // get modified image from server
-    const getModifiedImg = async (imgName:string) =>{
-        console.log('get modified start',imgName )
-        const imgObject = await ClientService.returnModifiedImg(imgName);
-
-        setSize({width: imgObject.width / pixelRange, height: imgObject.height / pixelRange});
-        console.log(size);
-        setModifiedImg(String(imgObject.newImgData));
-        return imgObject;
-    }
-    
-
-    const handleUpload = async () => {
-        const formData = new FormData();
-        formData.append('image', image);
-        // upload image to server
-        await ClientService.uploadImg(formData).then(data => setImgSystemName(data));
-        // get image back from server to show
-        await getImg();
-    }
-
+    // request to modify image
     const handleModify = async () => {
-        // request to modify image
-        const imgObject = await ClientService.modifyImg(String(imgSystemName), Number(pixelRange));
-        console.log('modified img name', imgObject);
-        setModifiedImgSystemName(imgObject);
+        if (image){
+            const imgDataObject = await ClientService.modifyImgV2(image, Number(pixelRange));
+            console.log('modified img', imgDataObject);
 
-        // rewuest to show modified image
-        await getModifiedImg(String(imgObject));
+            const imgBlob = dataURItoBlob(imgDataObject);
+            // console.log(imgBlob)
+            setImage(new File([imgBlob], 'somename.png'))
+        }
     };
 
     const handleVerifyColors = async () => {
-        console.log('name',imgModifiedImgSystemName);
-        console.log(value);
-        const data = await ClientService.verifyColors(imgModifiedImgSystemName, Number(value));
-        console.log('data', data)
-        setColors(() => data);
+        if (image){
+            const data = await ClientService.verifyColorsV2(image, Number(value));
+            console.log('data', data)
+            setColors(() => data);
+        }
     };
 
 
     const handleColorChange = async (color: [number, number, number], newColor: [number, number, number]) => {
         console.log('in color change')
-        const img = await ClientService.colorChange(imgModifiedImgSystemName, Number(pixelRange), color, newColor, colors);
+        const img = await ClientService.colorChange(String(imgModifiedImgSystemName), Number(pixelRange), color, newColor, colors);
         setNewColorsImg(img);
         console.log('finish', img)
     }
@@ -93,20 +79,12 @@ export const FormComponent:FC = () => {
         <div className="form">
             <div className="input-box">
                 <label htmlFor="input-file" className="input-file-button">Выбрать файл</label>
-                <input type="file" name="file" id="input-file" className="input" onChange={handleImage}/>
-                <label className="input-file-name">{imageName}</label>
+                <input type="file" name="file" id="input-file" className="input" onChange={handleImageUpload}/>
+                {/* <label className="input-file-name">{imageName}</label> */}
                 
             </div>
-
-            {/* <div className="button-box"> */}
-                <button type="button"
-                    className="input-file-button"
-                    onClick={handleUpload}>
-                        Загрузить
-                </button>
-            {/* </div> */}
             
-            <img src={img} className="uploaded-img"/>
+            <img src={imageDataUrl} className="uploaded-img"/>
             
             <input type="range"
                 min={0}
@@ -121,9 +99,7 @@ export const FormComponent:FC = () => {
             <label className="pixelation-label">{pixelRange}</label>
 
             <button type="button" className="input-file-button" onClick={handleModify}>Изменить</button>
-           
 
-            <img src={modifiedImg} className="uploaded-img"/>
 
             {imgModifiedImgSystemName && <label className="img-size-label">{size.width}x{size.height}</label>}
 
@@ -137,7 +113,7 @@ export const FormComponent:FC = () => {
                 {colors.map((color:[number, number, number]) => 
                 <div className="color" onClick={e => {setShowPallete(!showPallete); 
                     setChangedColor(color); 
-                    handleColorChange(color, [1,2,3])
+                    handleColorChange(color, [255, 128, 75])
                     }} style={{
                     backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
                     }} >
@@ -147,7 +123,7 @@ export const FormComponent:FC = () => {
                     
                 </div>)}
                 {showPallete && 
-                        <div>ofofof</div>
+                        <div className="color-pallete">ofofof</div>
                     }
             </div>
             <img src={newColorsImg} className="uploaded-img"/>

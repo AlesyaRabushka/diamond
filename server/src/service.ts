@@ -67,44 +67,73 @@ export class Service{
             throw error;
         }
     }
-    async returnImg(){
+
+    async modifyImgV2(file:Express.Multer.File, pixelationFactor:number){
         try {
-            let imgData = '';
-            if (existsSync(String(process.env.IMG_ORIGINAL_DATA_PATH))){
-                console.log('find file!')
-                imgData = readFileSync(String(process.env.IMG_ORIGINAL_DATA_PATH), 'utf-8');
-            }
-            
-            return imgData;
+            // console.log('heere')
+            if (pixelationFactor == 0){
+                return 'data:image/png;base64,' + file.buffer.toString('base64'); 
+              }
+              
+              const img = await read(file.buffer);
+  
+              if ((img).bitmap.width % pixelationFactor != 0){
+                  (img).resize((img).bitmap.width - ((img).bitmap.width % pixelationFactor), (img).bitmap.height);
+              }
+              if ((img).bitmap.height % pixelationFactor != 0){
+                  (img).resize((img).bitmap.width, (img).bitmap.height - ((img).bitmap.height % pixelationFactor));
+              }
+  
+              const buffer = await img.pixelate(pixelationFactor).getBufferAsync('image/png')
+            //   console.log('data:image/png;base64,' + buffer.toString('base64'))
+              return 'data:image/png;base64,' + buffer.toString('base64'); 
         } catch (error) {
-            console.log('[Service error]: RETURN IMG', error)
+            console.log('[Service error]: MODIFY', error)
 
             throw error;
         }
     }
 
-    async returnModifiedImg(imgName:string){
-        try {
-            console.log('return modified', `${process.env.SYSTEM_PATH}/${imgName}`)
+
+
+    // async returnImg(){
+    //     try {
+    //         let imgData = '';
+    //         if (existsSync(String(process.env.IMG_ORIGINAL_DATA_PATH))){
+    //             console.log('find file!')
+    //             imgData = readFileSync(String(process.env.IMG_ORIGINAL_DATA_PATH), 'utf-8');
+    //         }
             
-            const pixelatedImg = await loadImage(`${process.env.SYSTEM_PATH}/${imgName}`);
-            const canvas = createCanvas(pixelatedImg.width, pixelatedImg.height)
-            const ctx = canvas.getContext('2d');
+    //         return imgData;
+    //     } catch (error) {
+    //         console.log('[Service error]: RETURN IMG', error)
 
-            const height = pixelatedImg.height;
-            const width = pixelatedImg.width;
+    //         throw error;
+    //     }
+    // }
 
-            ctx.drawImage(pixelatedImg, 0, 0, width, height);
-            const newImgData = canvas.toDataURL('image/jpeg');
+    // async returnModifiedImg(imgName:string){
+    //     try {
+    //         console.log('return modified', `${process.env.SYSTEM_PATH}/${imgName}`)
+            
+    //         const pixelatedImg = await loadImage(`${process.env.SYSTEM_PATH}/${imgName}`);
+    //         const canvas = createCanvas(pixelatedImg.width, pixelatedImg.height)
+    //         const ctx = canvas.getContext('2d');
 
-            // console.log(width, height)
-            return {newImgData, width, height};
-        } catch (error) {
-            console.log('[Service return modified error]: RETURN MODIFIED', error)
+    //         const height = pixelatedImg.height;
+    //         const width = pixelatedImg.width;
 
-            throw error;
-        }
-    }
+    //         ctx.drawImage(pixelatedImg, 0, 0, width, height);
+    //         const newImgData = canvas.toDataURL('image/jpeg');
+
+    //         // console.log(width, height)
+    //         return {newImgData, width, height};
+    //     } catch (error) {
+    //         console.log('[Service return modified error]: RETURN MODIFIED', error)
+
+    //         throw error;
+    //     }
+    // }
 
     async verifyColors(imgName: string, colorAmount: number){
         try {
@@ -121,6 +150,27 @@ export class Service{
             throw error;
         }
     }
+
+
+    async verifyColorsV2(file: Express.Multer.File, colorAmount: number){
+        try {
+            // const img = String(await read(file.buffer))
+            // // console.log(file.originalname)
+
+            
+            const path = `${process.env.SYSTEM_PATH}/${file.filename}`;
+            let colors = await prominent(path, {amount: colorAmount});
+            unlinkSync(path);
+            console.log(colors);
+
+            return colors;
+        } catch (error) {
+            console.log('[Service error]: verify colors', error)
+
+            throw error;
+        }
+    }
+
 
     async closestColor(targetColor:number[], colorArray:Array<number[]>){
         try {
@@ -189,9 +239,9 @@ export class Service{
                 // console.log(closestColor, oldColor)
                 if (closestColor.toString() === oldColor.toString()){
                     // console.log('yes', closestColor, oldColor);
-                    imageData.data[i] = 204;
-                    imageData.data[i + 1] = 50;
-                    imageData.data[i + 2] = 218;
+                    imageData.data[i] = newColor[0];
+                    imageData.data[i + 1] = newColor[1];
+                    imageData.data[i + 2] = newColor[2];
 
                     // console.log(imageData.data[i], imageData.data[i + 1], imageData.data[i + 2])
 

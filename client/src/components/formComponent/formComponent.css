@@ -145,6 +145,8 @@ input[type='range']::-moz-range-thumb{
 .grid-container{
     display: grid;
     grid-template-columns: auto auto auto;
+
+    margin-bottom: calc(5%);
 }
 
 .color{
@@ -154,6 +156,7 @@ input[type='range']::-moz-range-thumb{
     border: 0.6px solid #080d58;
 
     cursor: pointer;
+
 }
 
 .color:hover{
@@ -185,6 +188,10 @@ input[type='range']::-moz-range-thumb{
 .color:hover .tooltip {
     opacity: 1;
     /* margin-top: -30px; */
+}
+
+.color-pallete{
+    
 }
 
 @media screen and (min-height: 110vh)  {
