@@ -10,11 +10,12 @@ export const FormComponent:FC = () => {
     // colors
     const mainColors = [[0, 255, 255], [0, 128, 255], [0, 0, 255], [128, 0, 255], [255, 0, 255], [255, 0, 128],
                         [255, 0, 0], [255, 128, 0], [255, 255, 0], [128, 255, 0], [0, 255, 0], [0, 255, 128]]
-    const usedColors:Array<number[]> = [];
 
     // uploaded image
     const [image, setImage] = useState<File | undefined>(undefined);
     const [imageDataUrl, setImageDataUrl] = useState<string>('');
+
+    const [drag, setDrag] = useState(false);
 
     useEffect(() => {
         if (image){
@@ -104,16 +105,59 @@ export const FormComponent:FC = () => {
         }
     }
 
+
+
     return (
         <div className="layout">
         <div className="form">
-            <div className="input-box">
-                <label htmlFor="input-file" className="input-file-button">Выбрать файл</label>
-                <input type="file" name="file" id="input-file" className="input" onChange={handleImageUpload}/>
-                {/* <label className="input-file-name">{imageName}</label> */}
-                
-            </div>
             
+            
+            {drag ?
+                    <div className="drag-area"
+                        onDragStart={e => {
+                            e.preventDefault();
+                            setDrag(true);
+                        }}
+                        onDragLeave={e => {
+                            e.preventDefault();
+                            setDrag(false)
+                        }}
+                        onDragOver={e => {
+                            e.preventDefault();
+                            setDrag(true);
+                        }}
+                        onDrop={e => {
+                            e.preventDefault();
+                            let file = e.dataTransfer.files[0];
+                            setImage(file)
+                            setDrag(false);
+                        }}
+                    >
+                        Отпустите картинку
+          
+                    </div>
+                : <div className="drag-area"
+                        onDragStart={e => {
+                            e.preventDefault();
+                            setDrag(true);
+                        }}
+                        onDragLeave={e => {
+                            e.preventDefault();
+                            setDrag(false)
+                        }}
+                        onDragOver={e => {
+                            e.preventDefault();
+                            setDrag(true);
+                        }}
+                        >
+                        Перетащите картинку сюда или нажмите на кнопку
+                        <div className="input-box">
+                            <label htmlFor="input-file" className="input-file-button">Выбрать файл</label>
+                            <input type="file" name="file" id="input-file" className="input" onChange={handleImageUpload}/>
+                        </div>
+                    </div>
+            }
+
             <img src={imageDataUrl} className="uploaded-img"/>
             
             <input type="range"
