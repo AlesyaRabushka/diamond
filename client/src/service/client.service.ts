@@ -54,7 +54,7 @@ export class ClientService{
         }
     }
 
-    static async colorChangeV2(file:File, pixelationFactor:number, oldColor: [number, number, number], newColor:[number, number, number], colorArray:Array<number[]>){
+    static async colorChangeV2(file:File, pixelationFactor:number, oldColor: Array<number>, newColor:Array<number>, colorArray:Array<number[]>, alreadyChanged:Array<number[]>){
         try {
             console.log('array',colorArray)
             const data = new FormData();
@@ -67,10 +67,17 @@ export class ClientService{
             for (let i = 0; i < newColor.length; i++){
                 data.append('newColor', String(newColor[i]));
             }
-            const arr1 = []
             for (let i = 0; i < colorArray.length; i++){
                 data.append('colorArray', String(colorArray[i]));
             }
+            if (alreadyChanged.length == 0){
+                data.append('alreadyChanged', '')
+            } else{
+                for (let i = 0; i < alreadyChanged.length; i++){
+                    data.append('alreadyChanged', String(alreadyChanged[i]));
+                }
+            }
+            console.log('already', alreadyChanged)
             
             // data.append('newColor', JSON.stringify(oldColor));
             // data.append('newColor', JSON.stringify(newColor));
@@ -148,7 +155,7 @@ export class ClientService{
             console.log('array',colorArray)
             const response = await $host.post('/change-color', {imgData, pixelationFactor, oldColor, newColor, colorArray});
 
-            console.log('response',response)
+            console.log('response',response.data)
 
             return response.data;
         } catch (error) {

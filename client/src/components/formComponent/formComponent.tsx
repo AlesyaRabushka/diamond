@@ -7,6 +7,10 @@ import fileDownload from "js-file-download"
 
 
 export const FormComponent:FC = () => {
+    // colors
+    const mainColors = [[0, 255, 255], [0, 128, 255], [0, 0, 255], [128, 0, 255], [255, 0, 255], [255, 0, 128],
+                        [255, 0, 0], [255, 128, 0], [255, 255, 0], [128, 255, 0], [0, 255, 0], [0, 255, 128]]
+    const usedColors:Array<number[]> = [];
 
     // uploaded image
     const [image, setImage] = useState<File | undefined>(undefined);
@@ -21,7 +25,6 @@ export const FormComponent:FC = () => {
             });
 
             reader.readAsDataURL(image);
-            console.log('changed')
         }
     }, [image])
 
@@ -39,7 +42,7 @@ export const FormComponent:FC = () => {
 
     
     const [colors, setColors] = useState<any>([]);
-    const [newColorsImg, setNewColorsImg] = useState('');
+    const [alreadyChanged, setAlreadyChanged] = useState<any>([]);
 
     // upload image from file system
     const handleImageUpload = (e:any) => {
@@ -50,10 +53,10 @@ export const FormComponent:FC = () => {
     // request to modify image
     const handleModify = async () => {
         if (image){
-            const imgDataObject = await ClientService.modifyImgV2(image, Number(pixelRange));
-            console.log('modified img', imgDataObject);
-
-            const imgBlob = dataURItoBlob(imgDataObject);
+            const {data, height, width} = await ClientService.modifyImgV2(image, Number(pixelRange));
+            // console.log('modified img', imgDataObject);
+            setSize({width:width, height:height})
+            const imgBlob = dataURItoBlob(data);
             // console.log(imgBlob)
             setImage(new File([imgBlob], 'diamond.png'))
         }
@@ -69,14 +72,28 @@ export const FormComponent:FC = () => {
     };
 
     // change clicked color to the given one
-    const handleColorChange = async (color: [number, number, number], newColor: [number, number, number]) => {
+    const handleColorChange = async (color:Array<number>, newColor: Array<number>) => {
         if (image){
-            console.log('in color change')
-            const imgData = await ClientService.colorChangeV2(image, Number(pixelRange), color, newColor, colors);
+            console.log('in color change');
+            console.log('changed')
+            console.log(alreadyChanged)
+
+            const {result, changedArray} = await ClientService.colorChangeV2(image, Number(pixelRange), color, newColor, colors, mainColors);
             // setNewColorsImg(imgData);
-            const imgBlob = dataURItoBlob(imgData);
+            setAlreadyChanged(changedArray);
+            const imgBlob = dataURItoBlob(result);
             // console.log(imgBlob)
-            setImage(new File([imgBlob], 'diamond.png'))
+            setImage(new File([imgBlob], 'diamond.png'));
+            // console.log('new color', newColor   )
+            // console.log('colors used',alreadyChanged)
+            // usedColors.push(newColor);
+            // let arr = [];
+            // for (let i = 0; i < usedColors.length; i++){
+            //     arr.push(usedColors[i])
+            // }
+            // arr.push(newColor)
+            // console.log('used: ',arr);
+            // setAlreadyChanged(arr);
         }
     }
 
@@ -121,24 +138,41 @@ export const FormComponent:FC = () => {
 
             <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button>
 
-            
-            <div className="grid-container">
-                {colors.map((color:[number, number, number]) => 
-                <div className="color" onClick={e => {setShowPallete(!showPallete); 
-                    setChangedColor(color); 
-                    handleColorChange(color, [255, 128, 75])
-                    }} style={{
-                    backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
-                    }} >
 
-                    <span className="tooltip">Заменить цвет</span>
+            <div className="image-colors-pallete">
+                <div className="grid-container">
+                    {colors.map((color:[number, number, number]) => 
+                    <div className="color" onClick={e => {
+                            setShowPallete(!showPallete); 
+                            setChangedColor(color); 
+                            // handleColorChange(color, [255, 128, 75])
+                        }} 
+                        style={{
+                        backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`
+                        }} >
 
-                    
-                </div>)}
-                {showPallete && 
-                        <div className="color-pallete">ofofof</div>
-                    }
+                        <span className="tooltip">Заменить цвет</span>
+                    </div>)}                    
+                </div>
             </div>
+
+            {showPallete && 
+                    <div className="color-pallete">
+                        <div className="grid-container">
+                            {mainColors.map(newColor => 
+                                <div className="color" onClick={e => {
+                                    handleColorChange(changedColor, newColor);
+                                    setShowPallete(!showPallete);
+                                }}
+                                style={{
+                                    backgroundColor: `rgb(${newColor[0]}, ${newColor[1]}, ${newColor[2]})`
+                                }}>
+                                    
+                                </div>
+                            )}
+                        </div>
+                        </div>
+                }
             {/* <img src={newColorsImg} className="uploaded-img"/> */}
 
             

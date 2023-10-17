@@ -142,12 +142,7 @@ input[type='range']::-moz-range-thumb{
     color: white;
 }
 
-.grid-container{
-    display: grid;
-    grid-template-columns: auto auto auto;
 
-    margin-bottom: calc(5%);
-}
 
 .color{
     width: 50px;
@@ -185,13 +180,26 @@ input[type='range']::-moz-range-thumb{
     width: max-content;
 }
 
+.image-colors-pallete{
+    margin-bottom: calc(5%);
+}
+
 .color:hover .tooltip {
     opacity: 1;
     /* margin-top: -30px; */
 }
 
+.grid-container{
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
 .color-pallete{
-    
+    background-color: aliceblue;
+    /* padding-left: calc(1%); */
+
+    /* margin-top: calc(0%); */
+    /* margin-left: (calc(10%)); */
 }
 
 @media screen and (min-height: 110vh)  {

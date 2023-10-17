@@ -124,24 +124,24 @@ export class Controller{
     //     }
     // }
 
-    async changeColor(request:Request, response:Response){
-        try {
-            const result = await this.service.changeColor(request.body.imgData, request.body.pixelationFactor, request.body.oldColor, request.body.newColor, request.body.colorArray);
+    // async changeColor(request:Request, response:Response){
+    //     try {
+    //         const result = await this.service.changeColor(request.body.imgData, request.body.pixelationFactor, request.body.oldColor, request.body.newColor, request.body.colorArray);
 
-            response.status(201).json(result)
-        } catch (error) {
-            console.log('[Controller error]: ', error);
+    //         response.status(201).json(result)
+    //     } catch (error) {
+    //         console.log('[Controller error]: ', error);
 
-            throw error;
-        }
-    }
+    //         throw error;
+    //     }
+    // }
 
     async changeColorV2(request:Request, response:Response){
         try {
             
             const file = request.file!;
             console.log('controller', file.filename)
-            const result = await this.service.changeColorV2(file, request.body.pixelationFactor, request.body.oldColor, request.body.newColor, request.body.colorArray);
+            const result = await this.service.changeColorV2(file, request.body.pixelationFactor, request.body.oldColor, request.body.newColor, request.body.colorArray, request.body.alreadyChanged);
 
             response.status(201).json(result)
         } catch (error) {
