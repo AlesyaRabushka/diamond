@@ -22,3 +22,23 @@ export function dataURItoBlob(dataURI: string){
   //New Code
   return new Blob([ab], {type: mimeString});
 }
+
+
+export async function setNewColor(colorArray:Array<number[]>, oldColor:Array<number>, newColor:Array<number>){
+  try {
+    const colorStr = oldColor.toString();
+
+    for (let i = 0; i < colorArray.length; i++){
+      if (colorArray[i].toString() === colorStr){
+        colorArray[i][0] = newColor[0];
+        colorArray[i][1] = newColor[1];
+        colorArray[i][2] = newColor[2];
+        break;
+      }
+    }
+
+    return colorArray;
+  } catch (error) {
+    console.log('[HELPER] change color error:', error)
+  }
+}

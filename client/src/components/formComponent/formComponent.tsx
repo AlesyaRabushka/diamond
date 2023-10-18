@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { ClientService } from "../../service/client.service";
 import "./formComponent.css";
 import { DropDownComponent } from "../dropDownComponent/dropDownComponent";
-import {dataURItoBlob} from "../../helpers/helpers"
+import {dataURItoBlob, setNewColor} from "../../helpers/helpers"
 import fileDownload from "js-file-download"
 
 
@@ -81,6 +81,7 @@ export const FormComponent:FC = () => {
     // change clicked color to the given one
     const handleColorChange = async (color:Array<number>, newColor: Array<number>) => {
         if (image){
+            setColorChange(false);
             const {result, changedArray} = await ClientService.colorChangeV2(image, Number(pixelRange), color, newColor, colors, mainColors);
             
             setAlreadyChanged(changedArray);
@@ -88,6 +89,7 @@ export const FormComponent:FC = () => {
             const imgBlob = dataURItoBlob(result);
             setImage(new File([imgBlob], 'diamond.png'));
             
+            setColors(await setNewColor(colors, color, newColor));
             setColorChange(true);
         }
     }
@@ -202,7 +204,8 @@ export const FormComponent:FC = () => {
                                     </div>)}                    
                                 </div>
                             </div>
-        
+                            
+                            {/* color pallete of needed colors */}
                             {showPallete && 
                                 <div className="color-pallete">
                                     <div className="grid-container">
@@ -221,6 +224,7 @@ export const FormComponent:FC = () => {
                                     </div>
                             }
 
+                            {/* ----- LAST STEP => when colors have been changed */}
                             {colorChange &&
                                 <>
                                     <label style={{fontSize:20, fontFamily:"-moz-initial", color:"white"}}>Изменения успешно применены!</label>

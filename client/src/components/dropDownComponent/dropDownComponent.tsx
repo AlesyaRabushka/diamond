@@ -4,7 +4,7 @@ import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle';
 import { setSyntheticLeadingComments } from "typescript";
 
 export const DropDownComponent = ({setValue, value}:{setValue:any, value: string}) => {
-    const arr = [6, 12, 18, 24];
+    const arr = [4, 6, 12, 18, 24];
     const [show, setShow] = useState(false);
     // const [value, setValue] = useState('Выбрать');
 

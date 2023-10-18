@@ -245,8 +245,12 @@ export class Service{
                 console.log('NEW COLOR', newColor)
                 console.log(changedArray)
                 console.log(changedArray.includes(newColor))
+
             const allArray = JSON.stringify(changedArray)
-            
+            const oldColorStr =  JSON.stringify(oldColor);
+
+            // check if the color needed to be RESET 
+            const rechange = allArray.includes(oldColorStr)
 
 
             for (let i = 0; i < imageData.data.length; i += 4){
@@ -254,8 +258,15 @@ export class Service{
                 // console.log(color)
                 // for (let j = 0; j < changedArray.length; j++){
                     // if (!arr.includes(color)) arr.push(color)
-                    const cs = JSON.stringify(color)
-                    if (allArray.includes(cs)){
+                    const colorStr = JSON.stringify(color)
+                    if (rechange){
+                        if (colorStr === oldColorStr){
+                            imageData.data[i] = newColor[0];
+                            imageData.data[i + 1] = newColor[1];
+                            imageData.data[i + 2] = newColor[2];
+                        }
+                    }
+                    else if (allArray.includes(colorStr)){
                         // console.log('YES',color)
                         continue
                     } else{
@@ -266,7 +277,6 @@ export class Service{
                             imageData.data[i + 1] = newColor[1];
                             imageData.data[i + 2] = newColor[2];
                         }
-
                     }
                 // }
                     // console.log(color)
