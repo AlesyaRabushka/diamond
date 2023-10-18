@@ -41,7 +41,10 @@ export const DropDownComponent = ({setValue, value}:{setValue:any, value: string
             {show && (
                 <div className="color-amount-list">
                     {arr.map(item => 
-                        <div className="color-amount-item" onClick={e => setValue(String(item))}>
+                        <div className="color-amount-item" onClick={e => {
+                            
+                            setValue(String(item));
+                            }}>
                             {item}
                         </div>
                     )}

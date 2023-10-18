@@ -41,7 +41,9 @@ export const FormComponent:FC = () => {
     const [showPallete, setShowPallete] = useState(false);
     const [changedColor, setChangedColor] = useState([0, 0, 0]);
 
-    
+    // check if image colors array is setted
+    const [showColors, setShowColors] = useState(false);
+    // image colors array
     const [colors, setColors] = useState<any>([]);
     const [alreadyChanged, setAlreadyChanged] = useState<any>([]);
 
@@ -72,6 +74,7 @@ export const FormComponent:FC = () => {
     // return color pallete of image
     const handleVerifyColors = async () => {
         if (image){
+            console.log('here')
             const data = await ClientService.verifyColorsV2(image, Number(value));
             
             setColors(() => data);
@@ -146,7 +149,7 @@ export const FormComponent:FC = () => {
                             setDrag(true);
                         }}
                         >
-                        Перетащите картинку сюда или нажмите на кнопку
+                        Перенесите картинку сюда или нажмите на кнопку
                         <div className="input-box">
                             <label htmlFor="input-file" className="input-file-button">Выбрать файл</label>
                             <input type="file" name="file" id="input-file" className="input" onChange={handleImageUpload}/>
@@ -188,7 +191,6 @@ export const FormComponent:FC = () => {
                             <>
                             <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button>
         
-        
                             <div className="image-colors-pallete">
                                 <div className="grid-container">
                                     {colors.map((color:[number, number, number]) => 
@@ -204,6 +206,8 @@ export const FormComponent:FC = () => {
                                     </div>)}                    
                                 </div>
                             </div>
+                        
+                            
                             
                             {/* color pallete of needed colors */}
                             {showPallete && 
@@ -229,6 +233,7 @@ export const FormComponent:FC = () => {
                                 <>
                                     <label style={{fontSize:20, fontFamily:"-moz-initial", color:"white"}}>Изменения успешно применены!</label>
                                     <button type="button" className="input-file-button" onClick={handleDownload}>Скачать</button>
+                                    
                                 </>
                             }
                             </>
