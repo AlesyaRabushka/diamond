@@ -5,6 +5,7 @@ import { DropDownComponent } from "../dropDownComponent/dropDownComponent";
 import {dataURItoBlob, setNewColor} from "../../helpers/helpers"
 import fileDownload from "js-file-download"
 
+import { RiseLoader } from "react-spinners";
 
 export const FormComponent:FC = () => {
     // colors
@@ -51,6 +52,11 @@ export const FormComponent:FC = () => {
     const [modified, setModified] = useState(false);
     // check if image colors have been changed
     const [colorChange, setColorChange] = useState(false);
+    // check if spinner is needed
+    const [spinner, setSpinner] = useState(false);
+
+
+
 
     // upload image from file system
     const handleImageUpload = (e:any) => {
@@ -84,9 +90,10 @@ export const FormComponent:FC = () => {
     // change clicked color to the given one
     const handleColorChange = async (color:Array<number>, newColor: Array<number>) => {
         if (image){
+            setSpinner(true);
             setColorChange(false);
             const {result, changedArray} = await ClientService.colorChangeV2(image, Number(pixelRange), color, newColor, colors, mainColors);
-            
+            setSpinner(false)
             setAlreadyChanged(changedArray);
 
             const imgBlob = dataURItoBlob(result);
@@ -229,11 +236,17 @@ export const FormComponent:FC = () => {
                             }
 
                             {/* ----- LAST STEP => when colors have been changed */}
-                            {colorChange &&
+                            {colorChange ?
                                 <>
                                     <label style={{fontSize:20, fontFamily:"-moz-initial", color:"white"}}>Изменения успешно применены!</label>
                                     <button type="button" className="input-file-button" onClick={handleDownload}>Скачать</button>
                                     
+                                </>
+                                :
+                                <>
+                                {
+                                    spinner ? <RiseLoader color="rgba(30, 84, 206, 1)"/> : <></>
+                                }
                                 </>
                             }
                             </>
