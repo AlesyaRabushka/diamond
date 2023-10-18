@@ -221,7 +221,7 @@ export const FormComponent:FC = () => {
                                             style={{
                                                 backgroundColor: `rgb(${newColor[0]}, ${newColor[1]}, ${newColor[2]})`
                                             }}>
-                                                
+                                                <span className="tooltip">Выбрать цвет</span>
                                             </div>
                                         )}
                                     </div>
