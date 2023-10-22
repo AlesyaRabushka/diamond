@@ -1,3 +1,4 @@
+import {read} from "jimp";
 import { createCanvas, loadImage } from "canvas";
 
 type Args = {
@@ -22,10 +23,7 @@ type Args = {
   type Rgb = [r: number, g: number, b: number]
   
   type Url = string
-  
-  const getSrc = (item: Item): string =>
-    typeof item === 'string' ? item : item.src
-  
+
   const getArgs = ({
     amount = 3,
     format = 'array',
@@ -54,11 +52,15 @@ type Args = {
     return hex.length === 1 ? '0' + hex : hex
   }).join('')
   
-  const getImageData = async (src: Url) =>{
-    const img = await loadImage(src);
-    const canvas = createCanvas(img.width, img.height);
+  const getImageData = async (imageBuffer: Buffer) =>{
+    const image = await loadImage(imageBuffer)
+
+    const canvas = createCanvas(image.width, image.height);
+
+
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
     const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
     return data.data;
@@ -102,36 +104,34 @@ type Args = {
   }
   
   const getProminent = (data: Data, args: Args): Output => {
+    console.log('check 1')
     const gap = 4 * args.sample
     const colors: { [key: string]: number } = {}
-  
+    
     for (let i = 0; i < data.length; i += gap) {
       const rgb = [
         group(data[i], args.group),
         group(data[i + 1], args.group),
         group(data[i + 2], args.group),
       ].join()
-  
+      
       colors[rgb] = colors[rgb] ? colors[rgb] + 1 : 1
     }
-  
+    console.log('check 2')
+    
     return format(
       Object.entries(colors)
-        .sort(([_keyA, valA], [_keyB, valB]) => valA > valB ? -1 : 1)
-        .slice(0, args.amount)
+      .sort(([_keyA, valA], [_keyB, valB]) => valA > valB ? -1 : 1)
+      .slice(0, args.amount)
         .map(([rgb]) => rgb),
       args
     )
   }
   
-  const process = (handler: Handler, item: Item, args?: Partial<Args>): Promise<Output> =>
-    new Promise((resolve, reject) =>
-      getImageData(getSrc(item))
-        .then((data) => resolve(handler(data, getArgs(args))))
-        .catch((error) => reject(error))
-  )
+  const prominent = (buffer: Buffer, args?: Partial<Args>) => 
+    getImageData(buffer)
+    .then(
+      (data: Data) => getProminent(data, getArgs(args))
+    )
   
-  const average = (item: Item, args?: Partial<Args>) => process(getAverage, item, args)
-  const prominent = (item: Item, args?: Partial<Args>) => process(getProminent, item, args)
-  
-  export { average, prominent }
+  export { prominent }

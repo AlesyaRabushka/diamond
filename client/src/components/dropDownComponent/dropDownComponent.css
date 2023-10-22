@@ -1,32 +1,15 @@
-.color-amount-button{
-    width: 100px;
-    /* height: 40px; */
+.drop-down{
+    align-items: center;
 
-    margin-top: calc(2%);
-    margin-bottom: calc(2%);
-
-    border-radius: 20px;
-    box-shadow: 1px 3px #080d58;
-
-    background-color: rgb(42, 60, 218);
-
-    color: white;
-    font-size: 1.1em;
-
-    cursor: pointer;
-
-    text-align: center;
-
-    padding-top: calc(7%);
-    padding-bottom: calc(7%);
-    padding-left: calc(10%);
-    padding-right: calc(10%);
+    display: flex;
+    flex-direction: column;
 }
 
 
 .color-amount-list{
-    margin-top: calc(10%);
-    min-width: 100px;
+    /* margin-top: calc(10%); */
+    min-width: 200px;
+    /* background-color: aliceblue; */
 
     border-radius: 10px;
 
@@ -51,6 +34,34 @@
 
     margin-top: calc(1%);
     margin-bottom: calc(1%);
+
+    cursor: pointer;
+}
+
+.input-file-button-dropdown{
+    width: calc(10%);
+    min-width: 200px;
+    /* height: 40px; */
+
+    margin-top: calc(2%);
+    margin-bottom: calc(2%);
+    /* margin-left: calc(5%); */
+
+    border-radius: 20px;
+    box-shadow: 1px 3px #080d58;
+    border: none;
+    outline: none;
+    
+
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    /* padding: calc(1%); */
+    
+    background-color: rgb(42, 60, 218);
+
+    color: white;
+    font-size: 1.1em;
 
     cursor: pointer;
 }

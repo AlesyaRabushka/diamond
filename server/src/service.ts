@@ -144,10 +144,10 @@ export class Service{
             const path = `${process.env.SYSTEM_PATH}/${imgName}`;
             console.log('path', path);
 
-            let colors = await prominent(path, {amount: colorAmount});
-            console.log(colors);
+            // let colors = await prominent(path, {amount: colorAmount});
+            // console.log(colors);
 
-            return colors;
+            return [];
         } catch (error) {
             console.log('[Service error]: verify colors', error)
 
@@ -158,14 +158,7 @@ export class Service{
 
     async verifyColorsV2(file: Express.Multer.File, colorAmount: number){
         try {
-            // const img = String(await read(file.buffer))
-            // // console.log(file.originalname)
-
-            
-            const path = `${process.env.SYSTEM_PATH}/${file.filename}`;
-            let colors = await prominent(path, {amount: colorAmount});
-            unlinkSync(path);
-            console.log(colors);
+            const colors = await prominent(file.buffer, {amount: colorAmount});
 
             return colors;
         } catch (error) {
@@ -209,10 +202,10 @@ export class Service{
     }
 
 
-    async getImgData(imgData:string){
+    async getImgData(imageBuffer: Buffer){
         try {
-            console.log('img name',imgData);
-            const image = await loadImage(`${process.env.SYSTEM_PATH}/${imgData}`);
+            console.log('img name',imageBuffer);
+            const image = await loadImage(imageBuffer);
             console.log('image', image);
            
             const canvas = createCanvas(image.width, image.height)
@@ -233,9 +226,9 @@ export class Service{
     }
 
 
-    async changePixelColor(imgName:string, pixelationFactor:number, oldColor:Array<number>, newColor:Array<number>, colorArray:Array<number[]>, changedArray:Array<number[]>){
+    async changePixelColor(imageBuffer: Buffer, pixelationFactor:number, oldColor:Array<number>, newColor:Array<number>, colorArray:Array<number[]>, changedArray:Array<number[]>){
         try {
-            let {imageData, canvas, ctx} = await this.getImgData(imgName);
+            let {imageData, canvas, ctx} = await this.getImgData(imageBuffer);
             // console.log('id',imageData.data)
             // for (let pixelBoxIndex = 0; pixelBoxIndex < imageData.data.length / pixelationFactor; pixelBoxIndex += pixelationFactor){
             //     const color = [imageData.data[pixelBoxIndex], imageData.data[pixelBoxIndex + 1], imageData.data[pixelBoxIndex + 2]]
@@ -278,16 +271,10 @@ export class Service{
                             imageData.data[i + 2] = newColor[2];
                         }
                     }
-                // }
-                    // console.log(color)
-                
-
             }
             ctx.putImageData(imageData, 0, 0);
-            // console.log(arr)
-        
+
             const data = canvas.toDataURL();
-            unlinkSync(`${process.env.SYSTEM_PATH}/${imgName}`);
 
             return data;
         } catch (error) {
@@ -334,7 +321,7 @@ export class Service{
             changedArray.push(newColor);
             // console.log('changed array', changedArray, changedArray.length)
             
-            const result = await this.changePixelColor(file.filename, pixelationFactor, oldColor, newColor, colorArray, changedArray);
+            const result = await this.changePixelColor(file.buffer, pixelationFactor, oldColor, newColor, colorArray, changedArray);
 
             return {result, changedArray};
         } catch (error) {

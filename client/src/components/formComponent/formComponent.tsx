@@ -34,7 +34,7 @@ export const FormComponent:FC = () => {
     // pixelationFactor
     const [pixelRange, setPixelRange] = useState(0);
     // color amount
-    const [value, setValue] = useState('Выбрать');
+    const [value, setValue] = useState('');
     // img size parameters
     const [size, setSize] = useState({width: 0, height:0});
 
