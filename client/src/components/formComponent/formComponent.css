@@ -232,7 +232,7 @@ input[type='range']::-moz-range-thumb{
 }
 
 .color-pallete{
-    background-color: aliceblue;
+    /* background-color: aliceblue; */
     /* padding-left: calc(1%); */
 
     /* margin-top: calc(0%); */
