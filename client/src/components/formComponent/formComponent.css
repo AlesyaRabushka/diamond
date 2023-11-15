@@ -239,6 +239,79 @@ input[type='range']::-moz-range-thumb{
     /* margin-left: (calc(10%)); */
 }
 
+
+.drop-down{
+    align-items: center;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+.color-amount-list{
+    /* margin-top: calc(10%); */
+    min-width: 200px;
+    /* background-color: aliceblue; */
+
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+}
+
+.color-amount-item{
+    width: calc(100%);
+    height: calc(100%);
+
+    background-color: aliceblue;
+    /* background-color: rgb(204, 50, 218);
+    background-color: rgb(70, 34, 155); */
+
+    border-radius: 20px;
+    border: 1px solid #16187c;
+
+    text-align: center;
+
+    margin-top: calc(1%);
+    margin-bottom: calc(1%);
+
+    cursor: pointer;
+}
+
+.input-file-button-dropdown{
+    width: calc(10%);
+    min-width: 200px;
+    /* height: 40px; */
+
+    margin-top: calc(2%);
+    margin-bottom: calc(2%);
+    /* margin-left: calc(5%); */
+
+    border-radius: 20px;
+    box-shadow: 1px 3px #080d58;
+    border: none;
+    outline: none;
+    
+
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    /* padding: calc(1%); */
+    
+    background-color: rgb(42, 60, 218);
+
+    color: white;
+    font-size: 1.1em;
+
+    cursor: pointer;
+}
+
+.color-amount-item:hover{
+    background-color: rgb(210, 214, 243);
+}
+
 @media screen and (min-height: 110vh)  {
     .form{
         margin-top: calc(2%);

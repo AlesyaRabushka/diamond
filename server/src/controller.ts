@@ -142,10 +142,37 @@ export class Controller{
             const file = request.file!;
             console.log('controller', file.filename)
             const result = await this.service.changeColorV2(file, request.body.pixelationFactor, request.body.oldColor, request.body.newColor, request.body.colorArray, request.body.alreadyChanged);
+            console.log(result)
+            response.status(201).json(result)
+        } catch (error) {
+            console.log('[Controller error]: ', error);
+
+            throw error;
+        }
+    }
+
+    async changeColorV3(request:Request, response:Response){
+        try {
+            
+            const file = request.file!;
+            console.log('controller', file.filename)
+            const result = await this.service.changeColorV3(file, request.body.pixelationFactor, request.body.colorsAmount);
 
             response.status(201).json(result)
         } catch (error) {
             console.log('[Controller error]: ', error);
+
+            throw error;
+        }
+    }
+
+    async getNewColorPallete(request:Request, response:Response){
+        try {
+            const result = await this.service.getNewColorPallete(request.body.originalColorsPallete, request.body.newColorPallete);
+
+            response.status(200).json(result)
+        } catch (error) {
+            console.log('[Controller error]: getNewColorPallete error ', error);
 
             throw error;
         }

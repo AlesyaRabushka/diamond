@@ -3,10 +3,10 @@ import './dropDownComponent.css'
 import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle';
 import { setSyntheticLeadingComments } from "typescript";
 
-export const DropDownComponent = ({setValue, value}:{setValue:any, value: string}) => {
-    const arr = [4, 6, 12, 18, 24];
+export const DropDownComponent = ({setValue, value}:{setValue:Function, value: string}) => {
+    const arr = [6, 12, 18];
     const [show, setShow] = useState(false);
-    // const [value, setValue] = useState('Выбрать');
+    const [value1, setValue1] = useState('Выбрать');
 
     const click = () => {
         console.log('hehre', show)
@@ -25,13 +25,7 @@ export const DropDownComponent = ({setValue, value}:{setValue:any, value: string
     }
 
     const activeRefDiv = useRef(null);
-    const activeRefBut = useRef(null);
 
-    // window.addEventListener('click',(e) =>{
-    //     if (e.target !== activeRefDiv.current){
-    //         setShow(false)
-    //     }
-    // })
 
     const dismiss = (event: React.FocusEvent<HTMLDivElement>) => {
         if(event.currentTarget === event.target){
@@ -42,12 +36,8 @@ export const DropDownComponent = ({setValue, value}:{setValue:any, value: string
 
     return (
         <div className="drop-down">
-            {/* <button type="button" onClick={click} >{value}</button> */}
             <input className="input-file-button-dropdown" value={value} ref={activeRefDiv} placeholder="Количество цветов" onClick={click} onChange={change} onBlur={(e: React.FocusEvent<HTMLDivElement>):void=> dismiss(e)}/> 
-            
-                {/* {value} */}
-                {/* <button ref={activeRefBut}  onClick={e => console.log('d')}><ArrowDropDownCircleIcon/></button> */}
-            {/* </div> */}
+        
 
             {show && (
                 <div className="color-amount-list">
@@ -58,7 +48,8 @@ export const DropDownComponent = ({setValue, value}:{setValue:any, value: string
                     .map(item => 
                         <div className="color-amount-item" onClick={e => {
                             
-                            setValue(String(item));
+                            // setValue1((e.currentTarget.textContent));
+                            setValue((e.currentTarget.textContent));
                             }}>
                             {item}
                         </div>

@@ -1,7 +1,6 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { ClientService } from "../../service/client.service";
 import "./formComponent.css";
-import { DropDownComponent } from "../dropDownComponent/dropDownComponent";
 import {dataURItoBlob, setNewColor} from "../../helpers/helpers"
 import fileDownload from "js-file-download"
 
@@ -35,7 +34,7 @@ export const FormComponent:FC = () => {
     // pixelationFactor
     const [pixelRange, setPixelRange] = useState(0);
     // color amount
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState('Выбрать количество цветов');
     // img size parameters
     const [size, setSize] = useState({width: 0, height:0});
 
@@ -82,25 +81,31 @@ export const FormComponent:FC = () => {
     const handleVerifyColors = async () => {
         if (image){
             console.log('here')
-            const data = await ClientService.verifyColorsV2(image, Number(value));
+            // const data = await ClientService.verifyColorsV2(image, Number(value));
             
-            setColors(() => data);
+            // setColors(() => data);
+            // setShowPallete(!showPallete); 
+                                            // setChangedColor(color); 
+            
         }
     };
 
     // change clicked color to the given one
-    const handleColorChange = async (color:Array<number>, newColor: Array<number>) => {
+    const handleColorChange = async () => {
         if (image){
             setSpinner(true);
             setColorChange(false);
-            const {result, changedArray} = await ClientService.colorChangeV2(image, Number(pixelRange), color, newColor, colors, mainColors);
+            // const {result, changedArray} = await ClientService.colorChangeV3(image, Number(pixelRange), color, newColor, colors, mainColors);
+            console.log('value',value)
+            const {result, changedArray} = await ClientService.colorChangeV3(image, Number(pixelRange), Number(value));
+
             setSpinner(false)
             setAlreadyChanged(changedArray);
 
             const imgBlob = dataURItoBlob(result);
             setImage(new File([imgBlob], 'diamond.png'));
             
-            setColors(await setNewColor(colors, color, newColor));
+            // setColors(await setNewColor(colors, color, newColor));
             setColorChange(true);
         }
     }
@@ -109,6 +114,41 @@ export const FormComponent:FC = () => {
     const handleDownload = async() => {
         if (image){
             fileDownload(image, `${image.name}`)
+        }
+    }
+
+
+    //drop down
+    const dropDownValues = [6, 12, 18];
+    const [show, setShow] = useState(false);
+    const click = () => {
+        console.log('hehre', show)
+
+        setShow(!show);
+    }
+
+    const change = (e: React.FormEvent<HTMLInputElement>) => {
+        const regex = /^[0-9\b]+$/;
+        console.log(e.currentTarget.value)
+
+        if (e.currentTarget.value == "" || regex.test(e.currentTarget.value)){
+            setValue(e.currentTarget.value);
+            console.log(value)
+        }
+    }
+
+    const dropDownClick = (item:number) => {
+        console.log(item)
+        setValue(String(item));
+    }
+
+    const activeRefDiv = useRef(null);
+    const activeRefBut = useRef(null);
+
+
+    const dismiss = (event: React.FocusEvent<HTMLDivElement>) => {
+        if(event.currentTarget === event.target){
+            setShow(false);
         }
     }
 
@@ -191,15 +231,36 @@ export const FormComponent:FC = () => {
 
                         <>
                         <label className="img-size-label">{size.width}x{size.height}</label>
-                        <DropDownComponent setValue={setValue} value={value}/>
+
+
+                        <div className="drop-down">
+                            {/* <input className="input-file-button-dropdown" value={value} ref={activeRefDiv} placeholder="Количество цветов" onClick={click} onChange={change} onBlur={(e: React.FocusEvent<HTMLDivElement>):void=> dismiss(e)}/>  */}
+                            <button className="input-file-button-dropdown" onClick={click}>{value}</button>
+
+                            {show && (
+                                <div className="color-amount-list">
+                                    {dropDownValues
+                                    .map(item => 
+                                        <div className="color-amount-item" onClick={e => {
+                                            setValue(String(item));
+                                            setShow(!show);
+                                        }}>
+                                            {item}
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                                    
+                            }
+                        </div>
 
                         {/* ----- THIRD STEP => when set colors amount */}
                         {value != 'Выбрать' &&
                         
                             <>
-                            <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button>
+                            {/* <button type="button" className="input-file-button" onClick={handleVerifyColors}>Выбрать цвета</button> */}
         
-                            <div className="image-colors-pallete">
+                            {/* <div className="image-colors-pallete">
                                 <div className="grid-container">
                                     {colors.map((color:[number, number, number]) => 
                                     <div className="color" onClick={e => {
@@ -213,12 +274,14 @@ export const FormComponent:FC = () => {
                                         <span className="tooltip">Заменить цвет</span>
                                     </div>)}                    
                                 </div>
-                            </div>
+                            </div> */}
+
+                            <button type="button" className="input-file-button" onClick={handleColorChange}>Изменить</button>
                         
                             
                             
-                            {/* color pallete of needed colors */}
-                            {showPallete && 
+                            
+                            {/* {showPallete && 
                                 <div className="color-pallete">
                                     <div className="grid-container">
                                         {mainColors.map(newColor => 
@@ -234,7 +297,7 @@ export const FormComponent:FC = () => {
                                         )}
                                     </div>
                                     </div>
-                            }
+                            } */}
 
                             {/* ----- LAST STEP => when colors have been changed */}
                             {colorChange ?

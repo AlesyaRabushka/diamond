@@ -4,6 +4,8 @@ import {writeFileSync, readFileSync, existsSync, unlinkSync} from "fs";
 import {read} from "jimp";
 
 import { prominent } from "./colorsPallete";
+import { getColorPallete } from "./colors.pallete";
+import { TypePredicateKind } from "typescript";
 
 // import {prominent} from "colors.js"
 
@@ -159,7 +161,8 @@ export class Service{
     async verifyColorsV2(file: Express.Multer.File, colorAmount: number){
         try {
             const colors = await prominent(file.buffer, {amount: colorAmount});
-
+           
+            
             return colors;
         } catch (error) {
             console.log('[Service error]: verify colors', error)
@@ -229,11 +232,6 @@ export class Service{
     async changePixelColor(imageBuffer: Buffer, pixelationFactor:number, oldColor:Array<number>, newColor:Array<number>, colorArray:Array<number[]>, changedArray:Array<number[]>){
         try {
             let {imageData, canvas, ctx} = await this.getImgData(imageBuffer);
-            // console.log('id',imageData.data)
-            // for (let pixelBoxIndex = 0; pixelBoxIndex < imageData.data.length / pixelationFactor; pixelBoxIndex += pixelationFactor){
-            //     const color = [imageData.data[pixelBoxIndex], imageData.data[pixelBoxIndex + 1], imageData.data[pixelBoxIndex + 2]]
-            //     const closestColor = await this.closestColor(color, colorArray);
-            //     if (closestColor.toString() === oldColor.toString()){
 
                 console.log('NEW COLOR', newColor)
                 console.log(changedArray)
@@ -303,17 +301,18 @@ export class Service{
             const newColor = newColorStr.map(item => parseInt(item, 10));
             let colorArray:Array<number[]> = [];
             
+            
             for (let i = 0 ; i < colorArrayStr.length; i ++){
                 const arr = colorArrayStr[i].split(',').map(item => parseInt(item, 10));
                 colorArray.push(arr)
             }
             let changedArray:Array<number[]> = [];
-            // console.log('already ',Array(alreadyChanged))
+            
             if (alreadyChanged.length != 0){
                 for (let i = 0 ; i < alreadyChanged.length; i ++){
                     const arr = alreadyChanged[i].split(',')
                     const arr1 = arr.map(item => parseInt(item, 10));
-                    // console.log('arr', arr1)
+                    
                     changedArray.push(arr1)
                 }
             } 
@@ -331,7 +330,224 @@ export class Service{
         }
     }
 
-    
+    async changePixelColorV3(imageBuffer: Buffer, oldColors:any, newColors:any){
+        try {
+            let {imageData, canvas, ctx} = await this.getImgData(imageBuffer);
+
+
+            for (let i = 0; i < imageData.data.length; i += 4){
+                const color = [imageData .data[i], imageData.data[i+1], imageData.data[i+2]];
+                
+                    const colorStr = JSON.stringify(color)
+
+                    for (let j = 0; j < oldColors.length; j++){
+                        let oldColor = oldColors[j];
+                        let oldColorIndex = oldColors.indexOf(oldColor);
+                        let oldColorStr = JSON.stringify(oldColor);
+
+                        if (colorStr === oldColorStr){
+                            imageData.data[i] = newColors[oldColorIndex][0];
+                            imageData.data[i + 1] = newColors[oldColorIndex][1];
+                            imageData.data[i + 2] = newColors[oldColorIndex][2];
+                        }
+                        else{
+                                const closestColor = await this.closestColor(color, oldColors);
+                                
+                                if (closestColor.toString() === oldColor.toString()){
+                                    imageData.data[i] = newColors[oldColorIndex][0];
+                                    imageData.data[i + 1] = newColors[oldColorIndex][1];
+                                    imageData.data[i + 2] = newColors[oldColorIndex][2];
+                                }
+                            }
+                    }
+                   
+            }
+            ctx.putImageData(imageData, 0, 0);
+
+            const data = canvas.toDataURL();
+
+            return data;
+        } catch (error) {
+            console.log('[Service change pixel color]:', error);
+
+            throw error;
+        }
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    // define the value of the closest color distance
+    async defineClosestColorsDistance(color1:Array<number>, color2:Array<number>){
+        try {
+            let closestDist = Number.MAX_VALUE;
+
+            const dist = Math.sqrt(
+                (color2[0] - color1[0]) ** 2 + 
+                (color2[1] - color1[1]) ** 2 + 
+                (color2[2] - color1[2]) ** 2
+            );
+            if (dist < closestDist){
+                closestDist = dist;
+            }
+                
+            return closestDist;
+        } catch (error) {
+            console.log('[Service] defineColorsDistance error', error);
+
+            throw error;
+        }
+    }
+
+    // get min distances out of Min Distances arrays
+    getMinDistances(index:number, rowsArray:Array<number[]>, colsArray:Array<number[]>, takenIndexes: Array<[] | number>){
+        try {
+            let result = Object.create(null);
+            // let takenIndexes: Array<number> = [];
+
+            for (let i = index; i < rowsArray.length; i++){
+                let rowMin = Math.min(...rowsArray[i]);
+
+                let minIndex = rowsArray[i].indexOf(rowMin);
+
+                if (!takenIndexes.includes(minIndex)){
+                    let colMin = Math.min(...colsArray[minIndex]);
+
+                    if (rowMin == colMin){
+                        console.log('match',rowMin)
+                        takenIndexes.push(minIndex)
+                        result[i] = minIndex
+                        // return rowMin
+                    } else{
+                        
+                        
+                    }
+                } else{
+                    console.log('don\'t match');
+                    let found = false
+                    let arr = rowsArray[i].filter(item => item);
+                    console.log(rowsArray[i]);
+
+                    while(!found){
+                        arr[minIndex] = Number.MAX_SAFE_INTEGER;
+                        console.log('arr',arr);
+
+                        rowMin = Math.min(...arr);
+                        console.log('row min', rowMin);
+                        minIndex = arr.indexOf(rowMin);
+                        if (takenIndexes.includes(minIndex)){
+                            console.log('already taken')
+                        } else{
+                            console.log('match', rowMin)
+                            takenIndexes.push(minIndex)
+                            result[i] = minIndex
+                            found = true
+                        }
+
+                        // arr = [...buf]
+                        // found = true
+                    }
+                    // this.getMinDistances(minIndex, rowsArray, colsArray, takenIndexes);
+                }
+                
+            }
+
+            return result;
+        } catch (error) {
+            console.log('[getMinDistances] error', error);
+
+            throw error;
+        }
+    }
+
+    // define the new color for each of the old ones
+    async getNewColorPallete(originalColorsPallete:any, newColorPallete:any){
+        try {
+            let distancesArray = [];
+            
+
+            // define all min distnaces between each of the old colors and each of the new ones
+            for (let i = 0; i < originalColorsPallete.length; i++){
+                let colorDistanceArray = [];
+                for (let j = 0; j < newColorPallete.length; j++){
+                    const colorDist = await this.defineClosestColorsDistance(originalColorsPallete[i], newColorPallete[j]);
+                    colorDistanceArray.push(colorDist);
+                }
+                distancesArray.push(colorDistanceArray);
+            }
+
+            console.log('array', distancesArray)
+
+
+            // define min distnace for each color distance
+            let minDistancesArray = [];
+
+            function transpose(a:any) {
+                return Object.keys(a[0]).map(function(c) {
+                    return a.map(function(r:any) { return r[c]; });
+                });
+            }
+
+            let distancesArrayTransposed = transpose(distancesArray);
+
+            // distancesArray = [[8,4,1], [0,7,9], [1,3,2]]
+            // distancesArrayTransposed = transpose(distancesArray)
+
+            const result = await this.getMinDistances(0, distancesArray, distancesArrayTransposed, []);
+            console.log('done');
+            let oldColors:Array<number> = [];
+            let newColors:Array<number> = [];
+
+            let newPallete = Object.create(null)
+            for (let [key, value] of Object.entries(result)){
+                console.log(key, value);
+                oldColors.push(originalColorsPallete[Number(key)]);
+                newColors.push(newColorPallete[Number(value)]);
+                // newPallete[`${originalColorsPallete[Number(key)]}`] = `${newColorPallete[Number(value)]}`;
+            }
+
+            
+
+            return {oldColors, newColors};
+
+        } catch (error) {
+            console.log('[Service] getNewColorPalllete error', error);
+
+            throw error;
+        }
+    }
+
+    async changeColorV3(file:Express.Multer.File, pixelationFactor:number, colorsAmount:number){
+        try {
+
+            // original picture colors
+            const originalColorsPallete = await this.verifyColorsV2(file, colorsAmount);
+            console.log(typeof originalColorsPallete)
+
+            const newColorsPallete = getColorPallete(colorsAmount);
+            console.log(typeof newColorsPallete)
+
+            const {oldColors, newColors} = await this.getNewColorPallete(originalColorsPallete, newColorsPallete);
+
+            
+
+            const result = await this.changePixelColorV3(file.buffer, oldColors, newColors);
+
+            console.log(result);
+            let changedArray = ['lal'];
+
+            return {result, changedArray};
+            
+        } catch (error) {
+            console.log('[Service change color]:', error);
+
+            throw error;
+        }
+    }
+
+    // для каждого цвета картинки ищу ближайший среди готовых цветов
+    // если цвета одинаковые совпадают у двух цветов, то сравнить, где какое значение
+    // и присвоить это значение тому, где оно больше(?)
 }
 
 export const service = new Service();

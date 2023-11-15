@@ -79,9 +79,6 @@ export class ClientService{
             }
             console.log('already', alreadyChanged)
             
-            // data.append('newColor', JSON.stringify(oldColor));
-            // data.append('newColor', JSON.stringify(newColor));
-            // data.append('colorArray', JSON.stringify(colorArray));
 
             const response = await $host.post('/change-color-v2', data);
 
@@ -94,32 +91,30 @@ export class ClientService{
         }
     }
 
-    // return original image
-    // static async returnImg(){
-    //     try {
-    //         const response = await $host.get('/returnImg');
 
-    //         console.log('response',response.data);
 
-    //         return response.data;
-    //     } catch (error) {
-    //         console.log('[ClientService] error:', error);
-    //         throw error;
-    //     }
-    // }
+    static async colorChangeV3(file:File, pixelationFactor:number, colorsAmount:number){
+        try {
+            const data = new FormData();
 
-    // // return modified image
-    // static async returnModifiedImg(imgName:string){
-    //     try {
-    //         console.log('in return modified', imgName);
-    //         const response = await $host.post('/returnModifiedImg', {imgName});
-    //         console.log('return modified data',response.data);
-    //         return response.data;
-    //     } catch (error) {
-    //         console.log('[ClientService] error:', error);
-    //         throw error;
-    //     }
-    // }
+            data.append('image', file);
+            data.append('pixelationFactor', String(pixelationFactor));
+            data.append('colorsAmount', String(colorsAmount));
+            console.log('service colors amount', colorsAmount)
+            
+            
+
+            const response = await $host.post('/change-color-v3', data);
+
+            console.log('response color change v3',response.data)
+
+            return response.data;
+        } catch (error) {
+            console.log('[ClientService] color change:', error);
+            throw error;
+        }
+    }
+
 
 
     // modify image

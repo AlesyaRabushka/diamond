@@ -32,5 +32,6 @@ router.post('/verifyColors', controller.verifyColors.bind(controller));
 router.post('/verifyColors-v2', uploadWithoutStorage.single('image'), controller.verifyColorsV2.bind(controller));
 // router.post('/change-color', controller.changeColor.bind(controller));
 router.post('/change-color-v2', uploadWithoutStorage.single('image'), controller.changeColorV2.bind(controller));
+router.post('/change-color-v3', uploadWithoutStorage.single('image'), controller.changeColorV3.bind(controller));
 
-// router.get('/img/:name', controller.getImg.bind(controller))
+router.post('/get-new-color-pallete', controller.getNewColorPallete.bind(controller))
