@@ -38,15 +38,15 @@ export const FormComponent:FC = () => {
     // img size parameters
     const [size, setSize] = useState({width: 0, height:0});
 
-    // color change
-    const [showPallete, setShowPallete] = useState(false);
-    const [changedColor, setChangedColor] = useState([0, 0, 0]);
+    // // color change
+    // const [showPallete, setShowPallete] = useState(false);
+    // const [changedColor, setChangedColor] = useState([0, 0, 0]);
 
-    // check if image colors array is setted
-    const [showColors, setShowColors] = useState(false);
-    // image colors array
-    const [colors, setColors] = useState<any>([]);
-    const [alreadyChanged, setAlreadyChanged] = useState<any>([]);
+    // // check if image colors array is setted
+    // const [showColors, setShowColors] = useState(false);
+    // // image colors array
+    // const [colors, setColors] = useState<any>([]);
+    // const [alreadyChanged, setAlreadyChanged] = useState<any>([]);
 
     // check if image has been modified
     const [modified, setModified] = useState(false);
@@ -54,6 +54,8 @@ export const FormComponent:FC = () => {
     const [colorChange, setColorChange] = useState(false);
     // check if spinner is needed
     const [spinner, setSpinner] = useState(false);
+    // check when start processing
+    const [start, setStart] = useState(false);
 
 
 
@@ -94,13 +96,14 @@ export const FormComponent:FC = () => {
     const handleColorChange = async () => {
         if (image){
             setSpinner(true);
+            setStart(true);
             setColorChange(false);
             // const {result, changedArray} = await ClientService.colorChangeV3(image, Number(pixelRange), color, newColor, colors, mainColors);
             console.log('value',value)
-            const {result, changedArray} = await ClientService.colorChangeV3(image, Number(pixelRange), Number(value));
+            const result = await ClientService.colorChangeV3(image, Number(pixelRange), Number(value));
 
             setSpinner(false)
-            setAlreadyChanged(changedArray);
+            // setAlreadyChanged(changedArray);
 
             const imgBlob = dataURItoBlob(result);
             setImage(new File([imgBlob], 'diamond.png'));
@@ -121,35 +124,10 @@ export const FormComponent:FC = () => {
     //drop down
     const dropDownValues = [6, 12, 18];
     const [show, setShow] = useState(false);
-    const click = () => {
+    const dropDownClick = () => {
         console.log('hehre', show)
 
         setShow(!show);
-    }
-
-    const change = (e: React.FormEvent<HTMLInputElement>) => {
-        const regex = /^[0-9\b]+$/;
-        console.log(e.currentTarget.value)
-
-        if (e.currentTarget.value == "" || regex.test(e.currentTarget.value)){
-            setValue(e.currentTarget.value);
-            console.log(value)
-        }
-    }
-
-    const dropDownClick = (item:number) => {
-        console.log(item)
-        setValue(String(item));
-    }
-
-    const activeRefDiv = useRef(null);
-    const activeRefBut = useRef(null);
-
-
-    const dismiss = (event: React.FocusEvent<HTMLDivElement>) => {
-        if(event.currentTarget === event.target){
-            setShow(false);
-        }
     }
 
 
@@ -159,6 +137,7 @@ export const FormComponent:FC = () => {
         <div className="form">
             
             {/* ----- DRAG & DROP area */}
+            {!image && <>
             {drag ?
                     <div className="drag-area"
                         onDragStart={e => {
@@ -204,6 +183,8 @@ export const FormComponent:FC = () => {
                         </div>
                     </div>
             }
+            </>
+        }
 
             <img src={imageDataUrl} className="uploaded-img"/>
             
@@ -212,6 +193,8 @@ export const FormComponent:FC = () => {
             {image &&
             
               <div className="uploaded-image-content">
+                {!start &&
+                <>
                     <input type="range"
                     min={0}
                     max={100}   
@@ -225,6 +208,8 @@ export const FormComponent:FC = () => {
                     <label className="pixelation-label">{pixelRange}</label>
 
                     <button type="button" className="input-file-button" onClick={handleModify}>Изменить</button>
+                    </>
+                }
 
                     {/* ----- SECOND STEP => when image modified */}
                     {modified &&
@@ -232,27 +217,27 @@ export const FormComponent:FC = () => {
                         <>
                         <label className="img-size-label">{size.width}x{size.height}</label>
 
+                        {!start && <>
+                            <div className="drop-down">
+                                <button className="input-file-button-dropdown" onClick={dropDownClick}>{value}</button>
 
-                        <div className="drop-down">
-                            {/* <input className="input-file-button-dropdown" value={value} ref={activeRefDiv} placeholder="Количество цветов" onClick={click} onChange={change} onBlur={(e: React.FocusEvent<HTMLDivElement>):void=> dismiss(e)}/>  */}
-                            <button className="input-file-button-dropdown" onClick={click}>{value}</button>
-
-                            {show && (
-                                <div className="color-amount-list">
-                                    {dropDownValues
-                                    .map(item => 
-                                        <div className="color-amount-item" onClick={e => {
-                                            setValue(String(item));
-                                            setShow(!show);
-                                        }}>
-                                            {item}
-                                        </div>
-                                    )}
-                                </div>
-                            )
-                                    
-                            }
-                        </div>
+                                {show && (
+                                    <div className="color-amount-list">
+                                        {dropDownValues
+                                        .map(item => 
+                                            <div className="color-amount-item" onClick={e => {
+                                                setValue(String(item));
+                                                setShow(!show);
+                                            }}>
+                                                {item}
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                                        
+                                }
+                            </div>
+                        </>}
 
                         {/* ----- THIRD STEP => when set colors amount */}
                         {value != 'Выбрать' &&
@@ -276,8 +261,10 @@ export const FormComponent:FC = () => {
                                 </div>
                             </div> */}
 
-                            <button type="button" className="input-file-button" onClick={handleColorChange}>Изменить</button>
-                        
+                            
+                            {
+                                !start && <button type="button" className="input-file-button" onClick={handleColorChange}>Изменить</button>
+                            }
                             
                             
                             
@@ -309,7 +296,7 @@ export const FormComponent:FC = () => {
                                 :
                                 <>
                                 {
-                                    spinner ? <RiseLoader color="rgba(30, 84, 206, 1)"/> : <></>
+                                    spinner ? <RiseLoader className="spinner" color="rgba(30, 84, 206, 1)"/> : <></>
                                 }
                                 </>
                             }

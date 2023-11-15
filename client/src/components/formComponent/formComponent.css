@@ -274,7 +274,7 @@ input[type='range']::-moz-range-thumb{
 
     text-align: center;
 
-    margin-top: calc(1%);
+    margin-top: calc(1%);   
     margin-bottom: calc(1%);
 
     cursor: pointer;
@@ -286,7 +286,7 @@ input[type='range']::-moz-range-thumb{
     /* height: 40px; */
 
     margin-top: calc(2%);
-    margin-bottom: calc(2%);
+    margin-bottom: calc(5%);
     /* margin-left: calc(5%); */
 
     border-radius: 20px;
@@ -310,6 +310,10 @@ input[type='range']::-moz-range-thumb{
 
 .color-amount-item:hover{
     background-color: rgb(210, 214, 243);
+}
+
+.spinner{
+    margin-top: calc(5%);
 }
 
 @media screen and (min-height: 110vh)  {

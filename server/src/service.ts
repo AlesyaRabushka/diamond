@@ -101,46 +101,6 @@ export class Service{
     }
 
 
-
-    // async returnImg(){
-    //     try {
-    //         let imgData = '';
-    //         if (existsSync(String(process.env.IMG_ORIGINAL_DATA_PATH))){
-    //             console.log('find file!')
-    //             imgData = readFileSync(String(process.env.IMG_ORIGINAL_DATA_PATH), 'utf-8');
-    //         }
-            
-    //         return imgData;
-    //     } catch (error) {
-    //         console.log('[Service error]: RETURN IMG', error)
-
-    //         throw error;
-    //     }
-    // }
-
-    // async returnModifiedImg(imgName:string){
-    //     try {
-    //         console.log('return modified', `${process.env.SYSTEM_PATH}/${imgName}`)
-            
-    //         const pixelatedImg = await loadImage(`${process.env.SYSTEM_PATH}/${imgName}`);
-    //         const canvas = createCanvas(pixelatedImg.width, pixelatedImg.height)
-    //         const ctx = canvas.getContext('2d');
-
-    //         const height = pixelatedImg.height;
-    //         const width = pixelatedImg.width;
-
-    //         ctx.drawImage(pixelatedImg, 0, 0, width, height);
-    //         const newImgData = canvas.toDataURL('image/jpeg');
-
-    //         // console.log(width, height)
-    //         return {newImgData, width, height};
-    //     } catch (error) {
-    //         console.log('[Service return modified error]: RETURN MODIFIED', error)
-
-    //         throw error;
-    //     }
-    // }
-
     async verifyColors(imgName: string, colorAmount: number){
         try {
             const path = `${process.env.SYSTEM_PATH}/${imgName}`;
@@ -246,9 +206,6 @@ export class Service{
 
             for (let i = 0; i < imageData.data.length; i += 4){
                 const color = [imageData.data[i], imageData.data[i+1], imageData.data[i+2]];
-                // console.log(color)
-                // for (let j = 0; j < changedArray.length; j++){
-                    // if (!arr.includes(color)) arr.push(color)
                     const colorStr = JSON.stringify(color)
                     if (rechange){
                         if (colorStr === oldColorStr){
@@ -330,6 +287,11 @@ export class Service{
         }
     }
 
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
     async changePixelColorV3(imageBuffer: Buffer, oldColors:any, newColors:any){
         try {
             let {imageData, canvas, ctx} = await this.getImgData(imageBuffer);
@@ -375,7 +337,7 @@ export class Service{
     }
 
 
-    //////////////////////////////////////////////////////////////////////////////////////
+    
 
     // define the value of the closest color distance
     async defineClosestColorsDistance(color1:Array<number>, color2:Array<number>){
@@ -444,10 +406,7 @@ export class Service{
                             found = true
                         }
 
-                        // arr = [...buf]
-                        // found = true
                     }
-                    // this.getMinDistances(minIndex, rowsArray, colsArray, takenIndexes);
                 }
                 
             }
@@ -533,10 +492,11 @@ export class Service{
 
             const result = await this.changePixelColorV3(file.buffer, oldColors, newColors);
 
-            console.log(result);
+            // console.log(result);
             let changedArray = ['lal'];
+            console.log('done')
 
-            return {result, changedArray};
+            return result;
             
         } catch (error) {
             console.log('[Service change color]:', error);
@@ -544,10 +504,6 @@ export class Service{
             throw error;
         }
     }
-
-    // для каждого цвета картинки ищу ближайший среди готовых цветов
-    // если цвета одинаковые совпадают у двух цветов, то сравнить, где какое значение
-    // и присвоить это значение тому, где оно больше(?)
 }
 
 export const service = new Service();

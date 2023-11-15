@@ -106,7 +106,7 @@ export class ClientService{
 
             const response = await $host.post('/change-color-v3', data);
 
-            console.log('response color change v3',response.data)
+            console.log('response color change v3')
 
             return response.data;
         } catch (error) {
