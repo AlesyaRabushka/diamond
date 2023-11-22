@@ -40,7 +40,7 @@ export class Service{
     async modifyImg(path:string, pixelationFactor:number){
         try {
 
-            const img = read(path);
+            const img = await read(path);
             const newImgName = `pixelate_${Date.now()}.jpeg`;
             if (pixelationFactor == 0){
                 const paths = path.split('/');
@@ -48,16 +48,28 @@ export class Service{
                 return paths.pop();
             }
             
-            console.log((await img).bitmap.height, (await img).bitmap.width);
-            if ((await img).bitmap.width % pixelationFactor != 0){
-                (await img).resize((await img).bitmap.width - ((await img).bitmap.width % pixelationFactor), (await img).bitmap.height);
-            }
-            if ((await img).bitmap.height % pixelationFactor != 0){
-                (await img).resize((await img).bitmap.width, (await img).bitmap.height - ((await img).bitmap.height % pixelationFactor));
-            }
+            console.log('BEFORE', (img).bitmap.width, (img).bitmap.height);
+            // if ((img).bitmap.width % pixelationFactor != 0){
+            //     (img).resize((img).bitmap.width - ((img).bitmap.width % pixelationFactor), (img).bitmap.height);
+            // }
+            // if ((img).bitmap.height % pixelationFactor != 0){
+            //     (img).resize((img).bitmap.width, (img).bitmap.height - ((img).bitmap.height % pixelationFactor));
+            // }
             
-            console.log((await img).bitmap.height, (await img).bitmap.width);
-            (await img).pixelate(pixelationFactor).write(`${process.env.SYSTEM_PATH}/${newImgName}`);
+            const value = 150
+
+            if ((img).bitmap.height > img.bitmap.width){
+                const scale = value / img.bitmap.height
+
+                img.resize((img.bitmap.width * scale), (img.bitmap.height * scale))
+            } else {
+                const scale = value / img.bitmap.width
+
+                img.resize((img.bitmap.width * scale), (img.bitmap.height * scale))
+            }
+
+            console.log('AFTER' ,(img).bitmap.width, (img).bitmap.height);
+            (img).pixelate(pixelationFactor).write(`${process.env.SYSTEM_PATH}/${newImgName}`);
             
             console.log('NEW NAME', newImgName);
 
@@ -79,20 +91,41 @@ export class Service{
               
               const img = await read(file.buffer);
   
-              if ((img).bitmap.width % pixelationFactor != 0){
-                  (img).resize((img).bitmap.width - ((img).bitmap.width % pixelationFactor), (img).bitmap.height);
-              }
-              if ((img).bitmap.height % pixelationFactor != 0){
-                  (img).resize((img).bitmap.width, (img).bitmap.height - ((img).bitmap.height % pixelationFactor));
-              }
-  
-              const buffer = await img.pixelate(pixelationFactor).getBufferAsync('image/png')
-            //   console.log('data:image/png;base64,' + buffer.toString('base64'))
+            //   if ((img).bitmap.width % pixelationFactor != 0){
+            //       (img).resize((img).bitmap.width - ((img).bitmap.width % pixelationFactor), (img).bitmap.height);
+            //   }
+            //   if ((img).bitmap.height % pixelationFactor != 0){
+            //       (img).resize((img).bitmap.width, (img).bitmap.height - ((img).bitmap.height % pixelationFactor));
+            //   }
+
+            console.log('BEFORE' ,(img).bitmap.width, (img).bitmap.height);
+
+            // change img size
+            const limitSizeValue = 150
+            if (img.bitmap.width > limitSizeValue || img.bitmap.height > limitSizeValue){
+
+                if ((img).bitmap.height > img.bitmap.width){
+                    const scale = limitSizeValue / img.bitmap.height
+    
+                    img.resize((img.bitmap.width * scale), (img.bitmap.height * scale))
+                } else {
+                    const scale = limitSizeValue / img.bitmap.width
+    
+                    img.resize((img.bitmap.width * scale), (img.bitmap.height * scale))
+                }
+            }
+
+
+            console.log('AFTER' ,(img).bitmap.width, (img).bitmap.height);
+
+            const newPixelationFactor = pixelationFactor * 0.5
+            const buffer = await img.pixelate(newPixelationFactor).getBufferAsync('image/png')
+            
             const data = 'data:image/png;base64,' + buffer.toString('base64')
             const height = img.bitmap.height;
             const width = img.bitmap.width;
 
-              return {data, width, height}; 
+            return {data, width, height}; 
         } catch (error) {
             console.log('[Service error]: MODIFY', error)
 
@@ -388,19 +421,19 @@ export class Service{
                     console.log('don\'t match');
                     let found = false
                     let arr = rowsArray[i].filter(item => item);
-                    console.log(rowsArray[i]);
+                    // console.log(rowsArray[i]);
 
                     while(!found){
                         arr[minIndex] = Number.MAX_SAFE_INTEGER;
                         console.log('arr',arr);
 
                         rowMin = Math.min(...arr);
-                        console.log('row min', rowMin);
+                        // console.log('row min', rowMin);
                         minIndex = arr.indexOf(rowMin);
                         if (takenIndexes.includes(minIndex)){
-                            console.log('already taken')
+                            // console.log('already taken')
                         } else{
-                            console.log('match', rowMin)
+                            // console.log('match', rowMin)
                             takenIndexes.push(minIndex)
                             result[i] = minIndex
                             found = true
